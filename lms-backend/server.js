@@ -8,7 +8,7 @@ const {dbConnect}=require("./db/index.js")
 
 const app=express()
 
-const port = 9400
+const port = process.env.PORT || 9400
 
 app.use(express.json())
 app.use(cors())
