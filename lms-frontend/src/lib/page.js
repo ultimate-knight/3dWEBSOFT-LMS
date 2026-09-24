@@ -7,7 +7,7 @@ function getApiBaseURL() {
     if (typeof window !== "undefined") {
         return `http://${window.location.hostname}:9400`
     }
-    return "http://localhost:9400"
+    return process.env.NEXT_PUBLIC_API_URL
 }
 
 let api = axios.create({
@@ -31,3 +31,27 @@ api.interceptors.request.use((config) => {
 })
 
 export default api;
+
+
+
+// simpler one
+
+
+
+// import axios from "axios";
+
+// const api = axios.create({
+//     baseURL: "http://localhost:9400",
+// });
+
+// api.interceptors.request.use((config) => {
+//     const token = localStorage.getItem("token");
+
+//     if (token) {
+//         config.headers.Authorization = `Bearer ${token}`;
+//     }
+
+//     return config;
+// });
+
+// export default api;

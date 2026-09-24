@@ -37,7 +37,8 @@ export default function Home() {
    
 
     try {
-       const res=await api.post("/login",{email:details.email,password:details.password})
+       const email = details.email.trim()
+       const res=await api.post("/login",{email,password:details.password})
       localStorage.setItem("token",res.data.jwtToken)
       localStorage.setItem("studentname",res.data.username)
       
@@ -51,7 +52,14 @@ export default function Home() {
       setTimeout(()=>{
 
       },3000)
-      setError(error?.response?.data?.message || "invalid login attempt")
+      const msg = error?.response?.data?.message
+      const network = !error?.response && error?.message
+      setError(
+        msg ||
+          (network
+            ? "Cannot reach API. Set API_URL on Render frontend and redeploy."
+            : "invalid login attempt")
+      )
       
     }finally{
       setTimeout(()=>{
