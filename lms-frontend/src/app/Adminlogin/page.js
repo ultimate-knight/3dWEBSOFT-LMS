@@ -71,7 +71,7 @@ export default function Home() {
             <div className="flex flex-col p-18 max-w-[600px] rounded-2xl shadow-2xl shadow-gray-400 bg-blue-950 w-full gap-12">
              
                   <div className="flex gap-5 w-full">
-                  <Link href="/Admin" className="bg-blue-500 fixed top-5 right-20 text-white p-2 w-full max-w-[200px] bg-blue-950 font-bold rounded-2xl text-center">Admin login</Link>
+                  <Link href="/" className="bg-blue-500 fixed top-5 right-20 text-white p-2 w-full max-w-[200px] bg-blue-950 font-bold rounded-2xl text-center">Student login</Link>
                     <img src="/3dwebsoft.jpeg" className="w-full max-w-[150px] rounded-2xl"/>
                     <div className="flex flex-col gap-1 justify-center">
                         <p className="text-3xl font-bold text-white"><span className="text-green-500">LMS</span>-Portal</p>

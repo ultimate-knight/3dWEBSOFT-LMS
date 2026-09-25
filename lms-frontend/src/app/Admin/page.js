@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Sidebar from "@/Components/Sidebar"
 import Overheadbar from "@/Components/Overheadbar"
 import api from "@/lib/page"
+import { isAdminToken } from "@/lib/auth"
 
 
 function Section({ title, children }) {
@@ -449,6 +451,19 @@ function CredentialSharePanel({
 
 
 export default function Admin() {
+  const router = useRouter()
+  const [authChecked, setAuthChecked] = useState(false)
+
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (!isAdminToken(token)) {
+      localStorage.removeItem("token")
+      localStorage.removeItem("studentname")
+      router.replace("/Adminlogin")
+      return
+    }
+    setAuthChecked(true)
+  }, [router])
 
   // =========================
   // DATA
@@ -734,8 +749,9 @@ export default function Admin() {
   // Load data when page opens
 
   useEffect(() => {
+    if (!authChecked) return
     loadAll()
-  }, [])
+  }, [authChecked])
 
 
   // =========================
@@ -914,11 +930,24 @@ export default function Admin() {
     }
   }
 
+  if (!authChecked) {
+    return null
+  }
 
   return (
 
     <div className="flex flex-col gap-10 bg-white p-10 text-black min-w-screen overflow-hidden min-h-screen font-sans">
- <Link href="/" className="p-2 w-full max-w-[100px] bg-blue-500 text-center rounded-xl  font-bold text-white ml-auto ">Logout</Link>
+ <button
+          type="button"
+          onClick={() => {
+            localStorage.removeItem("token")
+            localStorage.removeItem("studentname")
+            router.replace("/Adminlogin")
+          }}
+          className="p-2 w-full max-w-[100px] bg-blue-500 text-center rounded-xl font-bold text-white ml-auto"
+        >
+          Logout
+        </button>
       {/* <Sidebar /> */}
 
       <div className="flex flex-col flex-1 min-w-0 bg-gray-200 p-3 min-h-screen">
