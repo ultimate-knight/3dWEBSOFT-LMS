@@ -996,6 +996,26 @@ function runQuery(sql, params = []) {
     })
 }
 
+/** `submit.option_id` FK → delete answer rows before options (or MySQL blocks delete). */
+async function deleteSubmitRowsForOptionIds(optionIds) {
+    if (!optionIds?.length) return
+    await runQuery("DELETE FROM submit WHERE option_id IN (?)", [optionIds])
+}
+
+async function deleteOptionsForQuestion(questionId) {
+    const rows = await runQuery("SELECT id FROM options WHERE question_id=?", [questionId])
+    const ids = rows.map((row) => row.id)
+    await deleteSubmitRowsForOptionIds(ids)
+    if (ids.length > 0) {
+        await runQuery("DELETE FROM options WHERE question_id=?", [questionId])
+    }
+}
+
+async function deleteOptionById(optionId) {
+    await runQuery("DELETE FROM submit WHERE option_id=?", [optionId])
+    return runQuery("DELETE FROM options WHERE id=?", [optionId])
+}
+
 app.delete("/admin/students/:id", async (req, res) => {
     const { id } = req.params
     try {
@@ -1018,7 +1038,7 @@ app.delete("/admin/courses/:id", async (req, res) => {
         for (const exam of exams) {
             const questions = await runQuery("SELECT id FROM questions WHERE exam_id=?", [exam.id])
             for (const q of questions) {
-                await runQuery("DELETE FROM options WHERE question_id=?", [q.id])
+                await deleteOptionsForQuestion(q.id)
             }
             await runQuery("DELETE FROM questions WHERE exam_id=?", [exam.id])
         }
@@ -1103,7 +1123,7 @@ app.delete("/admin/exams/:id", async (req, res) => {
     try {
         const questions = await runQuery("SELECT id FROM questions WHERE exam_id=?", [id])
         for (const q of questions) {
-            await runQuery("DELETE FROM options WHERE question_id=?", [q.id])
+            await deleteOptionsForQuestion(q.id)
         }
         await runQuery("DELETE FROM questions WHERE exam_id=?", [id])
         const result = await runQuery("DELETE FROM exam1 WHERE id=?", [id])
@@ -1117,7 +1137,7 @@ app.delete("/admin/exams/:id", async (req, res) => {
 app.delete("/admin/questions/:id", async (req, res) => {
     const { id } = req.params
     try {
-        await runQuery("DELETE FROM options WHERE question_id=?", [id])
+        await deleteOptionsForQuestion(id)
         const result = await runQuery("DELETE FROM questions WHERE id=?", [id])
         if (result.affectedRows === 0) return res.status(404).json({ error: "question not found" })
         return res.json({ message: "question deleted successfully" })
@@ -1129,7 +1149,7 @@ app.delete("/admin/questions/:id", async (req, res) => {
 app.delete("/admin/options/:id", async (req, res) => {
     const { id } = req.params
     try {
-        const result = await runQuery("DELETE FROM options WHERE id=?", [id])
+        const result = await deleteOptionById(id)
         if (result.affectedRows === 0) return res.status(404).json({ error: "option not found" })
         return res.json({ message: "option deleted successfully" })
     } catch (error) {
