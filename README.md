@@ -99,6 +99,26 @@ The API listens on **port 9400**. The Next.js app runs on **port 3000** by defau
 
 For LAN testing (phone/other PC), use your machine IP in the browser and set `NEXT_PUBLIC_API_URL` if needed. `next.config.mjs` may list `allowedDevOrigins` for your dev host.
 
+## Production deployment (why localhost works but the live link does not)
+
+Locally, the browser calls `/api/...` and Next forwards to `http://127.0.0.1:9400` where Express is running.
+
+On **Vercel / Render / Netlify**, there is **no** Express app on `localhost:9400` inside that server. If env still says `http://localhost:9400`, login returns **502** and you may see an HTML error page in the UI.
+
+**You need two deployments:**
+
+1. **Backend** — deploy `lms-backend` as a Web Service (e.g. Render). Note the public URL, e.g. `https://lms-api.onrender.com`. Health: `GET /hello`.
+2. **Frontend** — deploy `lms-frontend`. Set environment variables on the **frontend** host:
+
+   | Variable | Example | Purpose |
+   |----------|---------|---------|
+   | `NEXT_PUBLIC_API_URL` | `https://lms-api.onrender.com` | Browser calls API directly in production |
+   | `API_URL` | same as above | Next `/api` proxy (local dev + fallback) |
+
+   Redeploy after changing env. **Do not** use `localhost` in production env.
+
+Backend already uses `cors()` so browser → public API URL is allowed.
+
 ## Common URLs
 
 | Page | Path |

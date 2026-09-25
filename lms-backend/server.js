@@ -51,6 +51,11 @@ app.get("/hello",(req,res)=>{
     res.send("hello brother")
 })
 
+// Lightweight wake-up / health check — no DB, fast response once the process is running.
+app.get("/health",(req,res)=>{
+    res.status(200).json({ ok: true, service: "lms-backend" })
+})
+
 
 // student table
 app.post("/register",(req,res)=>{

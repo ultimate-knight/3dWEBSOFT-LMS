@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import api, { getApiErrorMessage } from "@/lib/page";
+import { getApiErrorMessage, apiPostWithRetry } from "@/lib/page";
 import { setAuthSession } from "@/lib/auth";
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
@@ -39,7 +39,10 @@ export default function Home() {
 
     try {
        const email = details.email.trim().toLowerCase()
-       const res=await api.post("/login",{email,password:details.password})
+       const res = await apiPostWithRetry("/login", {
+         email,
+         password: details.password,
+       })
        const token = res.data?.jwtToken
        if (!token) {
          setError("Login succeeded but no token was returned.")

@@ -39,6 +39,25 @@ async function proxy(request, context) {
 
   try {
     const response = await fetch(target, init);
+    const contentType = response.headers.get("content-type") || "";
+    const isHtml =
+      contentType.includes("text/html") ||
+      contentType.includes("application/xhtml");
+
+    if (response.status >= 500 && isHtml) {
+      return Response.json(
+        {
+          message:
+            "Backend returned a gateway error while waking up. Wait ~30s and try again, or call the API URL directly from the browser.",
+          hint:
+            "Set NEXT_PUBLIC_API_URL to your public Render URL so login does not rely on this /api proxy.",
+          proxyTarget: target,
+          upstreamStatus: response.status,
+        },
+        { status: response.status === 502 ? 502 : 503 }
+      );
+    }
+
     const responseHeaders = new Headers(response.headers);
     responseHeaders.delete("content-encoding");
 

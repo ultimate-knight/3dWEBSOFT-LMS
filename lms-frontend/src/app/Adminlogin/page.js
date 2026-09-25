@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import api, { getApiErrorMessage } from "@/lib/page";
+import { getApiErrorMessage, apiPostWithRetry } from "@/lib/page";
 import { setAuthSession } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -19,7 +19,7 @@ export default function AdminLoginPage() {
 
     try {
       const email = details.email.trim().toLowerCase();
-      const res = await api.post("/adminlogin", {
+      const res = await apiPostWithRetry("/adminlogin", {
         email,
         password: details.password,
       });
