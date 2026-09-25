@@ -39,8 +39,9 @@ function requireAdmin(req, res, next) {
     next()
 }
 
+// Only protect /admin/* APIs — not /adminlogin or /adminregister
 app.use((req, res, next) => {
-    if (!req.path.startsWith("/admin")) {
+    if (!req.path.startsWith("/admin/")) {
         return next()
     }
     return requireAdmin(req, res, next)
@@ -137,12 +138,17 @@ app.post("/adminregister",(req,res)=>{
 
 
 app.post("/adminlogin",(req,res)=>{
-    const {email,password}=req.body;
+    const email = String(req.body.email || "").trim().toLowerCase()
+    const password = req.body.password
 
-    const sql1="select * from adminlogin where email=?"
+    if (!email || !password) {
+        return res.status(400).json({ message: "email and password are required" })
+    }
+
+    const sql1="select * from adminlogin where LOWER(email)=?"
     
 
-    dbConnect.query(sql1,[email,password],async (error,result)=>{
+    dbConnect.query(sql1,[email],async (error,result)=>{
         if(error){
             return res.status(500).json({message:error.message})
         }
@@ -176,12 +182,17 @@ app.post("/adminlogin",(req,res)=>{
 
 
 app.post("/login",(req,res)=>{
-    const {email,password}=req.body;
+    const email = String(req.body.email || "").trim().toLowerCase()
+    const password = req.body.password
 
-    const sql1="select * from student where email=?"
+    if (!email || !password) {
+        return res.status(400).json({ message: "email and password are required" })
+    }
+
+    const sql1="select * from student where LOWER(email)=?"
     
 
-    dbConnect.query(sql1,[email,password],async (error,result)=>{
+    dbConnect.query(sql1,[email],async (error,result)=>{
         if(error){
             return res.status(500).json({message:error.message})
         }

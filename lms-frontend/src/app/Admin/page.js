@@ -6,7 +6,7 @@ import Link from "next/link"
 import Sidebar from "@/Components/Sidebar"
 import Overheadbar from "@/Components/Overheadbar"
 import api from "@/lib/page"
-import { isAdminToken } from "@/lib/auth"
+import { isAdminSession, clearAuthSession } from "@/lib/auth"
 
 
 function Section({ title, children }) {
@@ -455,10 +455,8 @@ export default function Admin() {
   const [authChecked, setAuthChecked] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem("token")
-    if (!isAdminToken(token)) {
-      localStorage.removeItem("token")
-      localStorage.removeItem("studentname")
+    if (!isAdminSession()) {
+      clearAuthSession()
       router.replace("/Adminlogin")
       return
     }
@@ -940,8 +938,7 @@ export default function Admin() {
  <button
           type="button"
           onClick={() => {
-            localStorage.removeItem("token")
-            localStorage.removeItem("studentname")
+            clearAuthSession()
             router.replace("/Adminlogin")
           }}
           className="p-2 w-full max-w-[100px] bg-blue-500 text-center rounded-xl font-bold text-white ml-auto"

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 
-import api from "@/lib/page";
+import api, { getApiErrorMessage } from "@/lib/page";
+import { setAuthSession } from "@/lib/auth";
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import {
@@ -37,35 +38,24 @@ export default function Home() {
    
 
     try {
-       const email = details.email.trim()
+       const email = details.email.trim().toLowerCase()
        const res=await api.post("/login",{email,password:details.password})
-      localStorage.setItem("token",res.data.jwtToken)
-      localStorage.setItem("studentname",res.data.username)
-      
+       const token = res.data?.jwtToken
+       if (!token) {
+         setError("Login succeeded but no token was returned.")
+         return
+       }
+       setAuthSession({
+         token,
+         role: "student",
+         name: res.data.username || "",
+       })
        setDetails({email:"",password:""})
-       setTimeout(()=>{
-            router.push("/Dashboard")
-       },4000)
-     
-      
+       router.replace("/Dashboard")
     } catch (error) {
-      setTimeout(()=>{
-
-      },3000)
-      const msg = error?.response?.data?.message
-      const network = !error?.response && error?.message
-      setError(
-        msg ||
-          (network
-            ? "Cannot reach API. Set API_URL on Render frontend and redeploy."
-            : "invalid login attempt")
-      )
-      
-    }finally{
-      setTimeout(()=>{
-        setError("")
-        setLoading(false)
-      },3000)
+      setError(getApiErrorMessage(error, "invalid login attempt"))
+    } finally {
+      setLoading(false)
     }
   }
 

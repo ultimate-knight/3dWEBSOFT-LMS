@@ -1,57 +1,58 @@
 import axios from "axios";
 
-function getApiBaseURL() {
-    if (process.env.NEXT_PUBLIC_API_URL) {
-        return process.env.NEXT_PUBLIC_API_URL
-    }
-    if (typeof window !== "undefined") {
-        return `http://${window.location.hostname}:9400`
-    }
-    return process.env.NEXT_PUBLIC_API_URL
+function getDirectBackendURL() {
+  const base =
+    process.env.API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:9400";
+  return base.replace(/\/$/, "");
 }
 
-let api = axios.create({
-    baseURL: getApiBaseURL(),
-})
+/**
+ * Browser calls same-origin `/api/...` (Next route handler → Express).
+ * Postman hits `http://localhost:9400/...` directly — same backend, different URL.
+ */
+export function getApiBaseURL() {
+  if (typeof window !== "undefined") {
+    return "/api";
+  }
+  return getDirectBackendURL();
+}
+
+const api = axios.create();
 
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token")
-    const path = config.url || ""
-    const isAuthRoute =
-        path.includes("/login") ||
-        path.includes("/register") ||
-        path.includes("/adminlogin") ||
-        path.includes("/adminregister")
+  config.baseURL = getApiBaseURL();
 
-    if (token && !isAuthRoute) {
-        config.headers.Authorization = `Bearer ${token}`
-    }
+  const token = localStorage.getItem("token");
+  const path = config.url || "";
+  const isAuthRoute =
+    path.includes("/login") ||
+    path.includes("/register") ||
+    path.includes("/adminlogin") ||
+    path.includes("/adminregister");
 
-    return config
-})
+  if (token && !isAuthRoute) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+export function getApiErrorMessage(error, fallback = "Request failed") {
+  const data = error?.response?.data;
+  const message =
+    data?.message ||
+    data?.error ||
+    (typeof data === "string" ? data : null);
+
+  if (message) return message;
+
+  if (!error?.response) {
+    return "Cannot reach API. Start the backend (port 9400) and restart `npm run dev` in lms-frontend.";
+  }
+
+  return fallback;
+}
 
 export default api;
-
-
-
-// simpler one
-
-
-
-// import axios from "axios";
-
-// const api = axios.create({
-//     baseURL: "http://localhost:9400",
-// });
-
-// api.interceptors.request.use((config) => {
-//     const token = localStorage.getItem("token");
-
-//     if (token) {
-//         config.headers.Authorization = `Bearer ${token}`;
-//     }
-
-//     return config;
-// });
-
-// export default api;
