@@ -149,6 +149,7 @@ Health check: `GET /hello`.
 | Issue | What to check |
 |-------|----------------|
 | Login works in Postman but not in the browser | Same API base URL (`NEXT_PUBLIC_API_URL` vs `localhost:9400`); admin uses `/adminlogin`, students use `/login` |
+| **502** on `/api/login` or `/api/adminlogin` | Backend not running, or deployed frontend still points at `localhost:9400`. Locally: `node server.js` in `lms-backend`. On Render/Vercel: set **`API_URL`** to your public backend URL and redeploy. |
 | `invalid email or password` after admin register | Admin register writes to `adminlogin`; `/adminlogin` must query the same table |
 | Cannot delete exam option | `submit` rows reference `options.id` — delete child rows first or edit the option text instead |
 | Modules not visible to student | Student must be in `enrollment` for that `course_id` |

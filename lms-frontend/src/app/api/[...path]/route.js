@@ -2,8 +2,16 @@ function getBackendBase() {
   const base =
     process.env.API_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:9400";
-  return base.replace(/\/$/, "");
+    "http://127.0.0.1:9400";
+
+  let normalized = base.replace(/\/$/, "");
+
+  // Next.js runs the proxy on the server — use IPv4 loopback locally.
+  if (normalized.includes("://localhost")) {
+    normalized = normalized.replace("://localhost", "://127.0.0.1");
+  }
+
+  return normalized;
 }
 
 async function proxy(request, context) {
@@ -16,6 +24,7 @@ async function proxy(request, context) {
   const headers = new Headers();
   request.headers.forEach((value, key) => {
     if (key.toLowerCase() === "host") return;
+    if (key.toLowerCase() === "connection") return;
     headers.set(key, value);
   });
 
@@ -28,15 +37,35 @@ async function proxy(request, context) {
     init.body = await request.arrayBuffer();
   }
 
-  const response = await fetch(target, init);
-  const responseHeaders = new Headers(response.headers);
-  responseHeaders.delete("content-encoding");
+  try {
+    const response = await fetch(target, init);
+    const responseHeaders = new Headers(response.headers);
+    responseHeaders.delete("content-encoding");
 
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers: responseHeaders,
-  });
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: responseHeaders,
+    });
+  } catch (error) {
+    console.error("[api proxy] failed:", target, error?.message || error);
+
+    const isLocalBackend =
+      getBackendBase().includes("127.0.0.1") ||
+      getBackendBase().includes("localhost");
+
+    return Response.json(
+      {
+        message: "Cannot reach the LMS backend.",
+        error: error?.message || "fetch failed",
+        hint: isLocalBackend
+          ? "In lms-backend run: node server.js (port 9400). Keep it running while using the app."
+          : "Set API_URL on the frontend host to your public backend URL (not localhost).",
+        proxyTarget: target,
+      },
+      { status: 503 }
+    );
+  }
 }
 
 export const GET = proxy;

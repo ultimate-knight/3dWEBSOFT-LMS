@@ -52,6 +52,12 @@ export function getApiErrorMessage(error, fallback = "Request failed") {
     return "Cannot reach API. Start the backend (port 9400) and restart `npm run dev` in lms-frontend.";
   }
 
+  if (error.response.status === 502 || error.response.status === 503) {
+    const hint = error.response.data?.hint;
+    if (hint) return hint;
+    return "Backend unreachable (502/503). Run `node server.js` in lms-backend.";
+  }
+
   return fallback;
 }
 
