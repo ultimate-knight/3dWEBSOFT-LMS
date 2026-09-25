@@ -13,7 +13,38 @@ const port = process.env.PORT || 9400
 app.use(express.json())
 app.use(cors())
 
+function requireAdmin(req, res, next) {
+    const authHeader = req.headers.authorization
+    if (!authHeader) {
+        return res.status(401).json({ error: "no token provided" })
+    }
 
+    const token = authHeader.split(" ")[1]
+    if (!token) {
+        return res.status(401).json({ error: "no token provided" })
+    }
+
+    let decoded
+    try {
+        decoded = jwt.verify(token, process.env.jwtsecret)
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token" })
+    }
+
+    if (decoded.role !== "admin") {
+        return res.status(403).json({ message: "Admin access required" })
+    }
+
+    req.admin = decoded
+    next()
+}
+
+app.use((req, res, next) => {
+    if (!req.path.startsWith("/admin")) {
+        return next()
+    }
+    return requireAdmin(req, res, next)
+})
 
 app.get("/hello",(req,res)=>{
     res.send("hello brother")
@@ -45,7 +76,7 @@ app.post("/register",(req,res)=>{
             }
 
             const token=jwt.sign(
-                {id:result.insertId,name:username},
+                {id:result.insertId,name:username,role:"student"},
                 process.env.jwtsecret,
                 {expiresIn:"7d"}
             )
@@ -87,7 +118,7 @@ app.post("/adminregister",(req,res)=>{
             }
 
             const token=jwt.sign(
-                {id:result.insertId,name:username},
+                {id:result.insertId,name:username,role:"admin"},
                 process.env.jwtsecret,
                 {expiresIn:"7d"}
             )
@@ -128,8 +159,11 @@ app.post("/adminlogin",(req,res)=>{
             return res.status(401).json({message:"invalid email or password"})
         }
 
-        const token=jwt.sign({id:student.id,name:student.username},process.env.jwtsecret,{expiresIn:"7d"})
-
+        const token=jwt.sign(
+            {id:student.id,name:student.username,role:"admin"},
+            process.env.jwtsecret,
+            {expiresIn:"7d"}
+        )
 
         return res.json({jwtToken:token,username:student.username,message:"you are logged in successfully"})
 
@@ -164,8 +198,11 @@ app.post("/login",(req,res)=>{
             return res.status(401).json({message:"invalid email or password"})
         }
 
-        const token=jwt.sign({id:student.id,name:student.username},process.env.jwtsecret,{expiresIn:"7d"})
-
+        const token=jwt.sign(
+            {id:student.id,name:student.username,role:"student"},
+            process.env.jwtsecret,
+            {expiresIn:"7d"}
+        )
 
         return res.json({jwtToken:token,username:student.username,message:"you are logged in successfully"})
 
