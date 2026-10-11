@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { getApiErrorMessage, apiPostWithRetry } from "@/lib/page";
+import { getApiErrorMessage, apiPostWithRetry } from "@/lib/apiHelpers";
 import { setAuthSession } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";

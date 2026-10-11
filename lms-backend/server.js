@@ -3,15 +3,35 @@ const cors=require("cors")
 require("dotenv").config()
 const bcrypt=require("bcryptjs")
 const jwt=require("jsonwebtoken")
+const multer=require("multer")
 const {dbConnect}=require("./db/index.js")
 
 
 const app=express()
 
+app.use(cors())
+
 const port = process.env.PORT || 9400
 
+const storage=multer.diskStorage({
+    destination:(req,file,cb)=>{
+        cb(null,"uploads")
+    },
+
+    filename:(req,file,cb)=>{
+        cb(null,Date.now()+"-"+file.originalname)
+    }
+})
+
+const upload=multer({
+    storage:storage
+})
+
+
+app.use("/uploads",express.static("uploads"))
+
 app.use(express.json())
-app.use(cors())
+
 
 function requireAdmin(req, res, next) {
     const authHeader = req.headers.authorization
@@ -1169,9 +1189,187 @@ app.delete("/admin/modules/:id", async (req, res) => {
     }
 })
 
+//certificate
+function randomfunc(prefix){
+    let randomer=""
+
+    for(let i=0;i<=10;i++){
+        randomer+=Math.floor(Math.random()*10)
+    }
+
+    return prefix+randomer
+}
+
+app.post("/certificate/",upload.single("photo"),(req,res)=>{
+    const {name,gender,parent,issue_date,joining_date,leaving_date,grade,exam_label,course_name}=req.body;
+    const enrollment_id=randomfunc("EID")
+    const roll_no=randomfunc("RN")
+    const certificate_no=randomfunc("CN")
+    const photo_url=req.file?`/uploads/${req.file.filename}`:null
+
+    const sql=`insert into certificate18(enrollment_id,roll_no,certificate_no,name,gender,parent,issue_date,joining_date,leaving_date,grade,photo_url,exam_label,course_name) values(?,?,?,?,?,?,?,?,?,?,?,?,?)`
+
+    dbConnect.query(sql,[enrollment_id,roll_no,certificate_no,name,gender,parent,issue_date,joining_date,leaving_date,grade,photo_url,exam_label,course_name],(error,result)=>{
+        if(error){
+            console.log("error occured",error.message)
+            return res.status(500).json({message:`error occured ${error.message}`})
+        }
+
+        if(!result){
+            console.log("error occured",error.message)
+            return res.status(405).json({message:"missing fields"})
+            
+        }
+
+        return res.json({message:"All data is created in certificate",data:result})
+
+    })
+
+})
+
+
+
+app.get("/certificate",(req,res)=>{
+   
+    const sql=`select * from certificate18`
+
+    dbConnect.query(sql,(error,result)=>{
+        if(error){
+            console.log("error occured",error.message)
+            return res.status(500).json({message:`error occured ${error.message}`})
+        }
+
+        if(!result){
+            console.log("error occured",error.message)
+            return res.status(404).json({message:"no resource found"})
+            
+        }
+
+        return res.json({message:"All data is fetched successfully in certificate",data:result})
+
+    })
+
+})
+
+
+
+app.get("/certificate/:id",(req,res)=>{
+    
+    const {id}=req.params
+    const sql=`select * from certificate18 where id=?`
+
+    dbConnect.query(sql,[id],(error,result)=>{
+        if(error){
+            console.log("error occured",error.message)
+            return res.status(500).json({message:`error occured ${error.message}`})
+        }
+
+        if(!result){
+            console.log("error occured",error.message)
+            return res.status(404).json({message:"no resource found"})
+            
+        }
+
+        return res.json({message:"All data is fetched successfully in certificate",data:result})
+
+    })
+
+})
+
+
+
+app.put("/certificate/:id",(req,res)=>{
+    
+   const {id}=req.params;
+
+   const affectedcolumns=["name","gender","parent","issue_date","joining_date","leaving_date","grade","photo_url","exam_label","course_name"]
+
+   const updates=[]
+   const values=[]
+
+   for(const columns of affectedcolumns){
+    if(req.body[columns]!==undefined){
+        updates.push(`${columns}=?`)
+        values.push(req.body[columns])
+    }
+   }
+
+   values.push(id)
+
+   if(updates.length===0){
+    return res.status(404).json({error:"data is not provided"})
+   }
+
+   const sql=`update certificate18 set ${updates.join(", ")} where id=?`
+
+   
+
+   dbConnect.query(sql,values,(error,result)=>{
+        if(error){
+            console.log("error",error.message)
+            return res.status(500).json({message:error.message})
+        }
+
+        if(result.affectedRows===0){
+            return res.status(404).json({message:"certificate not found"})
+        }
+
+        return res.json({message:`data updated for ${id} successfully`,data:result})
+   })
+})
+
+app.delete("/certificate/:id",(req,res)=>{
+    const {id}=req.params;
+
+    const sql=`delete from certificate18 where id=?`
+
+    dbConnect.query(sql,[id],(error,result)=>{
+        if(error){
+            return res.status(500).json({error:error.message})
+        }
+
+        return res.json({message:`${id} id deleted successfuly`})
+    })
+})
+
+
+
+app.get("/certificate/:id",(req,res)=>{
+    
+    const {id}=req.params
+    const sql=`select * from certificate18 where id=?`
+
+    dbConnect.query(sql,[id],(error,result)=>{
+        if(error){
+            console.log("error occured",error.message)
+            return res.status(500).json({message:`error occured ${error.message}`})
+        }
+
+        if(!result){
+            console.log("error occured",error.message)
+            return res.status(404).json({message:"no resource found"})
+            
+        }
+
+        return res.json({message:"All data is fetched successfully in certificate",data:result})
+
+    })
+
+})
+
+
+
+
+
+
+
+
 const server = app.listen(port, "0.0.0.0",()=>{
     console.log(`server is running on port ${port}`)
 })
+
+
+
 
 server.on("error", (err) => {
     if (err.code === "EADDRINUSE") {

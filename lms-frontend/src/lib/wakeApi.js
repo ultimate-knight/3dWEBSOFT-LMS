@@ -1,4 +1,4 @@
-import { getApiBaseURL } from "@/lib/page";
+
 
 let wakePromise = null;
 
@@ -7,6 +7,34 @@ let wakePromise = null;
  * Backend code cannot run while asleep — only an external request can start it.
  * Call this when the user opens the site (before login).
  */
+
+function normalizeBase(url) {
+  return (url || "").replace(/\/$/, "");
+}
+
+
+function getDirectBackendURL() {
+  const base =
+    process.env.API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://127.0.0.1:9400";
+  return normalizeBase(base);
+}
+
+
+function getApiBaseURL() {
+  if (typeof window !== "undefined") {
+    const configured = normalizeBase(process.env.NEXT_PUBLIC_API_URL)
+
+    if (configured) {
+      return configured
+    }
+
+    return "/api"
+  }
+
+  return getDirectBackendURL()
+}
 export function wakeApiBackend() {
   if (typeof window === "undefined") return Promise.resolve();
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Sidebar from "@/Components/Sidebar"
+import AdminSidebar from "@/Components/AdminSidebar"
 import Overheadbar from "@/Components/Overheadbar"
 import api from "@/lib/page"
 import { isAdminSession, clearAuthSession } from "@/lib/auth"
@@ -23,9 +24,11 @@ function DataTable({
   rows,
   emptyText = "No data yet",
   pageSize = 10,
+  onEdit,
   onDelete,
   deletingId
 }) {
+  const showActions = Boolean(onEdit || onDelete)
   const [page, setPage] = useState(1)
 
   useEffect(() => {
@@ -61,6 +64,7 @@ function DataTable({
 
   return (
     <div className="flex flex-col gap-3">
+      
 
       <div className="overflow-x-auto w-full border border-gray-200 rounded-xl">
 
@@ -79,7 +83,7 @@ function DataTable({
                 </th>
               ))}
 
-              {onDelete && (
+              {showActions && (
                 <th className="text-left p-2 font-bold">
                   Actions
                 </th>
@@ -119,19 +123,36 @@ function DataTable({
                     </td>
                   ))}
 
-                  {onDelete && (
+                  {showActions && (
                     <td className="p-2 align-top">
 
-                      <button
-                        type="button"
-                        onClick={() => onDelete(row)}
-                        disabled={isDeleting}
-                        className="px-3 py-1 rounded-lg bg-red-600 text-white text-xs font-bold disabled:opacity-50"
-                      >
-                        {isDeleting
-                          ? "Deleting..."
-                          : "Delete"}
-                      </button>
+                      <div className="flex flex-wrap gap-2">
+
+                        {onEdit && (
+                          <button
+                            type="button"
+                            onClick={() => onEdit(row)}
+                            // disabled={}
+                            className="px-3 py-1 rounded-lg bg-amber-600 text-white text-xs font-bold disabled:opacity-50"
+                          >
+                          Edit
+                          </button>
+                        )}
+
+                        {onDelete && (
+                          <button
+                            type="button"
+                            onClick={() => onDelete(row)}
+                            disabled={isDeleting}
+                            className="px-3 py-1 rounded-lg bg-red-600 text-white text-xs font-bold disabled:opacity-50"
+                          >
+                            {isDeleting
+                              ? "Deleting..."
+                              : "Delete"}
+                          </button>
+                        )}
+
+                      </div>
 
                     </td>
                   )}
@@ -452,20 +473,11 @@ function CredentialSharePanel({
 
 export default function Admin() {
   const router = useRouter()
+
+  // ----- auth -----
   const [authChecked, setAuthChecked] = useState(false)
 
-  useEffect(() => {
-    if (!isAdminSession()) {
-      clearAuthSession()
-      router.replace("/Adminlogin")
-      return
-    }
-    setAuthChecked(true)
-  }, [router])
-
-  // =========================
-  // DATA
-  // =========================
+  // ----- lists loaded from API -----
 
   const [users, setUsers] = useState([])
   const [courses, setCourses] = useState([])
@@ -480,6 +492,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(false)
   const [loadError, setLoadError] = useState("")
   const [deletingId, setDeletingId] = useState(null)
+  const [editId,setEditId]=useState(null)
 
 
   // =========================
@@ -650,9 +663,7 @@ export default function Admin() {
     })
 
 
-  // =========================
-  // GET DATA
-  // =========================
+  // ----- data fetch helpers -----
 
   async function safeGet(url) {
 
@@ -744,20 +755,23 @@ export default function Admin() {
   }
 
 
-  // Load data when page opens
+  // ----- effects (all hooks before handlers / JSX) -----
+
+  useEffect(() => {
+    if (!isAdminSession()) {
+      clearAuthSession()
+      router.replace("/Adminlogin")
+      return
+    }
+    setAuthChecked(true)
+  }, [router])
 
   useEffect(() => {
     if (!authChecked) return
     loadAll()
   }, [authChecked])
 
-
-  // =========================
-  // EDIT MODULE
-  // =========================
-
   useEffect(() => {
-
     if (!editModId) {
       setEditContent("")
       return
@@ -765,20 +779,16 @@ export default function Admin() {
 
     const module = modules.find(
       (item) =>
-        String(item.id) ===
-        String(editModId)
+        String(item.id) === String(editModId)
     )
 
     if (module) {
       setEditContent(module.content || "")
     }
-
   }, [editModId, modules])
 
 
-  // =========================
-  // POST
-  // =========================
+  // ----- shared mutations -----
 
   async function handlePost(
     url,
@@ -823,10 +833,6 @@ export default function Admin() {
   }
 
 
-  // =========================
-  // DELETE
-  // =========================
-
   async function handleDelete(
     url,
     rowId,
@@ -870,9 +876,12 @@ export default function Admin() {
   }
 
 
-  // =========================
-  // REGISTER STUDENT
-  // =========================
+  // ----- form submit handlers -----
+
+  function handleLogout() {
+    clearAuthSession()
+    router.replace("/Adminlogin")
+  }
 
   async function handleRegisterStudent(e) {
 
@@ -928,24 +937,334 @@ export default function Admin() {
     }
   }
 
+  function handleCreateCourse(e) {
+    e.preventDefault()
+
+    handlePost(
+      "/courses",
+      {
+        student_id: Number(crs.student_id),
+        name: crs.name,
+        description: crs.description,
+        duration: Number(crs.duration),
+        icon: crs.icon
+      },
+      setCrsMsg,
+      () =>
+        setCrs({
+          student_id: "",
+          name: "",
+          description: "",
+          duration: "",
+          icon: "/data.png"
+        })
+    )
+  }
+
+  function handleEnrollStudent(e) {
+    e.preventDefault()
+
+    handlePost(
+      "/enrollment",
+      {
+        student_id: Number(enroll.student_id),
+        course_id: Number(enroll.course_id)
+      },
+      setEnrollMsg,
+      () =>
+        setEnroll({
+          student_id: "",
+          course_id: ""
+        })
+    )
+  }
+
+  function handleMarkAttendance(e) {
+    e.preventDefault()
+
+    handlePost(
+      "/attendance",
+      {
+        student_id: Number(att.student_id),
+        course_id: Number(att.course_id),
+        Date: att.Date,
+        status: att.status
+      },
+      setAttMsg,
+      () =>
+        setAtt({
+          student_id: "",
+          course_id: "",
+          Date: "",
+          status: "present"
+        })
+    )
+  }
+
+  function handleAddResult(e) {
+    e.preventDefault()
+
+    handlePost(
+      "/result",
+      {
+        student_id: Number(resForm.student_id),
+        course_id: Number(resForm.course_id),
+        assesment: resForm.assesment,
+        score: Number(resForm.score),
+        grade: resForm.grade,
+        status: resForm.status
+      },
+      setResMsg,
+      () =>
+        setResForm({
+          student_id: "",
+          course_id: "",
+          assesment: "",
+          score: "",
+          grade: "",
+          status: "Pass"
+        })
+    )
+  }
+
+  function handleCreateExam(e) {
+    e.preventDefault()
+
+    handlePost(
+      "/exam",
+      {
+        course_id: Number(exam.course_id),
+        questionumbers: Number(exam.questionumbers),
+        duration: Number(exam.duration)
+      },
+      setExamMsg,
+      () =>
+        setExam({
+          course_id: "",
+          questionumbers: "",
+          duration: ""
+        })
+    )
+  }
+
+  function handleAddQuestion(e) {
+    e.preventDefault()
+
+    handlePost(
+      "/questions",
+      {
+        exam_id: Number(ques.exam_id),
+        question: ques.question
+      },
+      setQuesMsg,
+      () =>
+        setQues({
+          exam_id: "",
+          question: ""
+        })
+    )
+  }
+
+  function handleAddOption(e) {
+    e.preventDefault()
+
+    handlePost(
+      "/options",
+      {
+        question_id: Number(opts.question_id),
+        choice: opts.choice,
+        ischoice: opts.ischoice
+      },
+      setOptMsg,
+      () =>
+        setOpts({
+          question_id: opts.question_id,
+          choice: "",
+          ischoice: false
+        })
+    )
+  }
+
+  function handleAddModule(e) {
+    e.preventDefault()
+
+    let position = 1
+
+    for (let i = 0; i < modules.length; i++) {
+      if (
+        String(modules[i].course_id) ===
+        String(mod.course_id)
+      ) {
+        position++
+      }
+    }
+
+    handlePost(
+      "/modules",
+      {
+        course_id: Number(mod.course_id),
+        title: mod.title,
+        content: mod.content,
+        position
+      },
+      setModMsg,
+      () =>
+        setMod({
+          course_id: mod.course_id,
+          title: "",
+          content: ""
+        })
+    )
+  }
+
+  async function handleUpdateModuleContent(e) {
+    e.preventDefault()
+
+    setEditModMsg({
+      text: "",
+      ok: false
+    })
+
+    try {
+      const response = await api.put(
+        `/modules/${editModId}`,
+        {
+          content: editContent
+        }
+      )
+
+      setEditModMsg({
+        text:
+          response.data?.message ||
+          "Content saved",
+        ok: true
+      })
+
+      await loadAll()
+    } catch (error) {
+      setEditModMsg({
+        text:
+          error.response?.data?.error ||
+          error.response?.data?.message ||
+          "Failed to save content",
+        ok: false
+      })
+    }
+  }
+
+  // ----- table row actions (delete / edit wiring) -----
+
+  function deleteStudentRow(row) {
+    handleDelete(
+      `/admin/students/${row.id}`,
+      row.id,
+      "student"
+    )
+  }
+
+  function deleteCourseRow(row) {
+    handleDelete(
+      `/admin/courses/${row.id}`,
+      row.id,
+      "course"
+    )
+  }
+
+  function deleteEnrollmentRow(row) {
+    handleDelete(
+      `/admin/enrollments/${row.id}`,
+      row.id,
+      "enrollment"
+    )
+  }
+
+  function deleteAttendanceRow(row) {
+    handleDelete(
+      "/admin/attendance",
+      row._rowKey,
+      "attendance record",
+      {
+        student_id: row.student_id,
+        course_id: row.course_id,
+        Date: row.Date
+      }
+    )
+  }
+
+  function deleteResultRow(row) {
+    if (row.id) {
+      handleDelete(
+        `/admin/results/${row.id}`,
+        row._rowKey,
+        "result"
+      )
+      return
+    }
+
+    handleDelete(
+      "/admin/results",
+      row._rowKey,
+      "result",
+      {
+        course_id: row.course_id,
+        student_id: row.student_id,
+        assesment: row.assesment,
+        score: row.score
+      }
+    )
+  }
+
+  function deleteExamRow(row) {
+    handleDelete(
+      `/admin/exams/${row.id}`,
+      row.id,
+      "exam"
+    )
+  }
+
+  function deleteQuestionRow(row) {
+    handleDelete(
+      `/admin/questions/${row.id}`,
+      row.id,
+      "question"
+    )
+  }
+
+  function deleteOptionRow(row) {
+    handleDelete(
+      `/admin/options/${row.id}`,
+      row.id,
+      "option"
+    )
+  }
+
+  function deleteModuleRow(row) {
+    handleDelete(
+      `/admin/modules/${row.id}`,
+      row.id,
+      "module"
+    )
+  }
+
+  /** Example: open module editor from the table instead of the dropdown form. */
+  function editModuleRow(row) {
+    setEditModId(String(row.id))
+    setEditContent(row.content || "")
+  }
+
+  // ----- render -----
+
   if (!authChecked) {
     return null
   }
 
   return (
 
-    <div className="flex flex-col gap-10 bg-white p-10 text-black min-w-screen overflow-hidden min-h-screen font-sans">
- <button
-          type="button"
-          onClick={() => {
-            clearAuthSession()
-            router.replace("/Adminlogin")
-          }}
-          className="p-2 w-full max-w-[100px] bg-blue-500 text-center rounded-xl font-bold text-white ml-auto"
-        >
-          Logout
-        </button>
-      {/* <Sidebar /> */}
+    <div className="flex flex-col gap-10 bg-white text-black min-w-screen overflow-hidden min-h-screen font-sans">
+    
+ 
+        <div className="flex gap-8">
+        <AdminSidebar className="min-h-screen w-64"/>
 
       <div className="flex flex-col flex-1 min-w-0 bg-gray-200 p-3 min-h-screen">
        
@@ -958,7 +1277,13 @@ export default function Admin() {
           {/* ========================= */}
           {/* HEADER */}
           {/* ========================= */}
-
+          <button
+          type="button"
+          onClick={handleLogout}
+          className="p-2 w-full max-w-[100px] bg-blue-500 text-center rounded-xl font-bold text-white ml-auto"
+        >
+          Logout
+        </button>
           <div className="flex justify-between items-center">
 
             <div>
@@ -1147,14 +1472,10 @@ export default function Admin() {
                 // role: user.role,
                 email: user.email
               }))}
-              onDelete={(row) =>
-                handleDelete(
-                  `/admin/students/${row.id}`,
-                  row.id,
-                  "student"
-                )
-              }
+              onEdit={editModuleRow}
+              onDelete={deleteStudentRow}
               deletingId={deletingId}
+              
             />
 
           </Section>
@@ -1168,37 +1489,7 @@ export default function Admin() {
 
             <form
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-              onSubmit={(e) => {
-
-                e.preventDefault()
-
-                handlePost(
-                  "/courses",
-                  {
-                    student_id:
-                      Number(crs.student_id),
-
-                    name: crs.name,
-
-                    description:
-                      crs.description,
-
-                    duration:
-                      Number(crs.duration),
-
-                    icon: crs.icon
-                  },
-                  setCrsMsg,
-                  () =>
-                    setCrs({
-                      student_id: "",
-                      name: "",
-                      description: "",
-                      duration: "",
-                      icon: "/data.png"
-                    })
-                )
-              }}
+              onSubmit={handleCreateCourse}
             >
 
               <SelectField
@@ -1290,13 +1581,8 @@ export default function Admin() {
 
             <DataTable
               rows={courses}
-              onDelete={(row) =>
-                handleDelete(
-                  `/admin/courses/${row.id}`,
-                  row.id,
-                  "course"
-                )
-              }
+              onEdit={editModuleRow}
+              onDelete={deleteCourseRow}
               deletingId={deletingId}
             />
 
@@ -1314,13 +1600,8 @@ export default function Admin() {
                 progress: `${item.pct}%`
               }))}
               emptyText="No enrollments yet"
-              onDelete={(row) =>
-                handleDelete(
-                  `/admin/enrollments/${row.id}`,
-                  row.id,
-                  "enrollment"
-                )
-              }
+              onEdit={editModuleRow}
+              onDelete={deleteEnrollmentRow}
               deletingId={deletingId}
             />
 
@@ -1335,28 +1616,7 @@ export default function Admin() {
 
             <form
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-              onSubmit={(e) => {
-
-                e.preventDefault()
-
-                handlePost(
-                  "/enrollment",
-                  {
-                    student_id:
-                      Number(enroll.student_id),
-
-                    course_id:
-                      Number(enroll.course_id)
-                  },
-                  setEnrollMsg,
-                  () =>
-                    setEnroll({
-                      student_id: "",
-                      course_id: ""
-                    })
-                )
-
-              }}
+              onSubmit={handleEnrollStudent}
             >
 
               <SelectField
@@ -1418,34 +1678,7 @@ export default function Admin() {
 
             <form
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-              onSubmit={(e) => {
-
-                e.preventDefault()
-
-                handlePost(
-                  "/attendance",
-                  {
-                    student_id:
-                      Number(att.student_id),
-
-                    course_id:
-                      Number(att.course_id),
-
-                    Date: att.Date,
-
-                    status: att.status
-                  },
-                  setAttMsg,
-                  () =>
-                    setAtt({
-                      student_id: "",
-                      course_id: "",
-                      Date: "",
-                      status: "present"
-                    })
-                )
-
-              }}
+              onSubmit={handleMarkAttendance}
             >
 
               <SelectField
@@ -1539,22 +1772,8 @@ export default function Admin() {
                     `${row.student_id}-${row.course_id}-${row.Date}-${index}`
                 })
               )}
-              onDelete={(row) =>
-                handleDelete(
-                  "/admin/attendance",
-                  row._rowKey,
-                  "attendance record",
-                  {
-                    student_id:
-                      row.student_id,
-
-                    course_id:
-                      row.course_id,
-
-                    Date: row.Date
-                  }
-                )
-              }
+              onDelete={deleteAttendanceRow}
+              onEdit={editModuleRow}
               deletingId={deletingId}
             />
 
@@ -1569,44 +1788,7 @@ export default function Admin() {
 
             <form
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-              onSubmit={(e) => {
-
-                e.preventDefault()
-
-                handlePost(
-                  "/result",
-                  {
-                    student_id:
-                      Number(resForm.student_id),
-
-                    course_id:
-                      Number(resForm.course_id),
-
-                    assesment:
-                      resForm.assesment,
-
-                    score:
-                      Number(resForm.score),
-
-                    grade:
-                      resForm.grade,
-
-                    status:
-                      resForm.status
-                  },
-                  setResMsg,
-                  () =>
-                    setResForm({
-                      student_id: "",
-                      course_id: "",
-                      assesment: "",
-                      score: "",
-                      grade: "",
-                      status: "Pass"
-                    })
-                )
-
-              }}
+              onSubmit={handleAddResult}
             >
 
               <SelectField
@@ -1726,40 +1908,9 @@ export default function Admin() {
                     `result-${row.student_id}-${row.course_id}-${index}`
                 })
               )}
-              onDelete={(row) => {
+              onEdit={editModuleRow}
+              onDelete={deleteResultRow}
 
-                if (row.id) {
-
-                  handleDelete(
-                    `/admin/results/${row.id}`,
-                    row._rowKey,
-                    "result"
-                  )
-
-                } else {
-
-                  handleDelete(
-                    "/admin/results",
-                    row._rowKey,
-                    "result",
-                    {
-                      course_id:
-                        row.course_id,
-
-                      student_id:
-                        row.student_id,
-
-                      assesment:
-                        row.assesment,
-
-                      score:
-                        row.score
-                    }
-                  )
-
-                }
-
-              }}
               deletingId={deletingId}
             />
 
@@ -1774,34 +1925,7 @@ export default function Admin() {
 
             <form
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-              onSubmit={(e) => {
-
-                e.preventDefault()
-
-                handlePost(
-                  "/exam",
-                  {
-                    course_id:
-                      Number(exam.course_id),
-
-                    questionumbers:
-                      Number(
-                        exam.questionumbers
-                      ),
-
-                    duration:
-                      Number(exam.duration)
-                  },
-                  setExamMsg,
-                  () =>
-                    setExam({
-                      course_id: "",
-                      questionumbers: "",
-                      duration: ""
-                    })
-                )
-
-              }}
+              onSubmit={handleCreateExam}
             >
 
               <SelectField
@@ -1866,13 +1990,8 @@ export default function Admin() {
 
             <DataTable
               rows={exams}
-              onDelete={(row) =>
-                handleDelete(
-                  `/admin/exams/${row.id}`,
-                  row.id,
-                  "exam"
-                )
-              }
+              onEdit={editModuleRow}
+              onDelete={deleteExamRow}
               deletingId={deletingId}
             />
 
@@ -1887,28 +2006,7 @@ export default function Admin() {
 
             <form
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-              onSubmit={(e) => {
-
-                e.preventDefault()
-
-                handlePost(
-                  "/questions",
-                  {
-                    exam_id:
-                      Number(ques.exam_id),
-
-                    question:
-                      ques.question
-                  },
-                  setQuesMsg,
-                  () =>
-                    setQues({
-                      exam_id: "",
-                      question: ""
-                    })
-                )
-
-              }}
+              onSubmit={handleAddQuestion}
             >
 
               <SelectField
@@ -1959,13 +2057,8 @@ export default function Admin() {
 
             <DataTable
               rows={questions}
-              onDelete={(row) =>
-                handleDelete(
-                  `/admin/questions/${row.id}`,
-                  row.id,
-                  "question"
-                )
-              }
+              onEdit={editModuleRow}
+              onDelete={deleteQuestionRow}
               deletingId={deletingId}
             />
 
@@ -1985,35 +2078,7 @@ export default function Admin() {
 
             <form
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-              onSubmit={(e) => {
-
-                e.preventDefault()
-
-                handlePost(
-                  "/options",
-                  {
-                    question_id:
-                      Number(opts.question_id),
-
-                    choice:
-                      opts.choice,
-
-                    ischoice:
-                      opts.ischoice
-                  },
-                  setOptMsg,
-                  () =>
-                    setOpts({
-                      question_id:
-                        opts.question_id,
-
-                      choice: "",
-
-                      ischoice: false
-                    })
-                )
-
-              }}
+              onSubmit={handleAddOption}
             >
 
               <SelectField
@@ -2096,13 +2161,7 @@ export default function Admin() {
 
             <DataTable
               rows={optionsList}
-              onDelete={(row) =>
-                handleDelete(
-                  `/admin/options/${row.id}`,
-                  row.id,
-                  "option"
-                )
-              }
+              onDelete={deleteOptionRow}
               deletingId={deletingId}
             />
 
@@ -2117,51 +2176,7 @@ export default function Admin() {
 
             <form
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-              onSubmit={(e) => {
-
-                e.preventDefault()
-
-                let position = 1
-
-                for (let i = 0; i < modules.length; i++) {
-
-                  if (
-                    String(modules[i].course_id) ===
-                    String(mod.course_id)
-                  ) {
-                    position++
-                  }
-
-                }
-
-                handlePost(
-                  "/modules",
-                  {
-                    course_id:
-                      Number(mod.course_id),
-
-                    title:
-                      mod.title,
-
-                    content:
-                      mod.content,
-
-                    position:
-                      position
-                  },
-                  setModMsg,
-                  () =>
-                    setMod({
-                      course_id:
-                        mod.course_id,
-
-                      title: "",
-
-                      content: ""
-                    })
-                )
-
-              }}
+              onSubmit={handleAddModule}
             >
 
               <SelectField
@@ -2249,48 +2264,7 @@ export default function Admin() {
 
             <form
               className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-              onSubmit={async (e) => {
-
-                e.preventDefault()
-
-                setEditModMsg({
-                  text: "",
-                  ok: false
-                })
-
-                try {
-
-                  const response =
-                    await api.put(
-                      `/modules/${editModId}`,
-                      {
-                        content:
-                          editContent
-                      }
-                    )
-
-                  setEditModMsg({
-                    text:
-                      response.data?.message ||
-                      "Content saved",
-                    ok: true
-                  })
-
-                  await loadAll()
-
-                } catch (error) {
-
-                  setEditModMsg({
-                    text:
-                      error.response?.data?.error ||
-                      error.response?.data?.message ||
-                      "Failed to save content",
-                    ok: false
-                  })
-
-                }
-
-              }}
+              onSubmit={handleUpdateModuleContent}
             >
 
               <SelectField
@@ -2334,20 +2308,15 @@ export default function Admin() {
 
             <DataTable
               rows={modules}
-              onDelete={(row) =>
-                handleDelete(
-                  `/admin/modules/${row.id}`,
-                  row.id,
-                  "module"
-                )
-              }
+              onEdit={editModuleRow}
+              onDelete={deleteModuleRow}
               deletingId={deletingId}
             />
 
           </Section>
 
         </div>
-
+        </div>
       </div>
 
     </div>
