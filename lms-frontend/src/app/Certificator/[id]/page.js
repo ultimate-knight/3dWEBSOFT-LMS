@@ -238,6 +238,7 @@ useEffect(() => {
 {(photo || certificatePhotoUrl(data.photo_url)) && (
   <img
     src={photo || certificatePhotoUrl(data.photo_url)}
+    className="w-[27mm] rounded-lg border-1 border-black rounded-2xl h-auto"
     crossOrigin="anonymous"
     />)}
                         <div className="flex min-w-0 text-[13px] flex-col  gap-[1mm]">
