@@ -1,5 +1,7 @@
 const express=require("express")
 const cors=require("cors")
+const fs=require("fs")
+const path=require("path")
 require("dotenv").config()
 const bcrypt=require("bcryptjs")
 const jwt=require("jsonwebtoken")
@@ -12,10 +14,14 @@ const app=express()
 app.use(cors())
 
 const port = process.env.PORT || 9400
+const uploadsDir = path.join(__dirname, "uploads")
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true })
+}
 
 const storage=multer.diskStorage({
     destination:(req,file,cb)=>{
-        cb(null,"uploads")
+        cb(null, uploadsDir)
     },
 
     filename:(req,file,cb)=>{
@@ -28,7 +34,15 @@ const upload=multer({
 })
 
 
-app.use("/uploads",express.static("uploads"))
+app.use("/uploads", (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*")
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS")
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin")
+    if (req.method === "OPTIONS") {
+        return res.sendStatus(204)
+    }
+    next()
+}, express.static(uploadsDir))
 
 app.use(express.json())
 
