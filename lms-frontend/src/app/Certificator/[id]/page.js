@@ -26,19 +26,43 @@ useEffect(()=>{
   }
 },[id])
 
-useEffect(()=>{
-  async function convertPhoto(){
-    if(!data || !data.photo_url) return;
+// useEffect(()=>{
+//   async function convertPhoto(){
+//     if(!data || !data.photo_url) return;
 
     
-    const image=await imagetoDataURL(`${process.env.NEXT_PUBLIC_API_URL}${data.photo_url}`)
+//     const image=await imagetoDataURL(`${process.env.NEXT_PUBLIC_API_URL}${data.photo_url}`)
 
-    setPhoto(image)
-  }
+//     setPhoto(image)
+//   }
 
-  convertPhoto()
+//   convertPhoto()
   
-},[data])
+// },[data])
+
+function certificatePhotoUrl(photo_url) {
+  if (!photo_url) return ""
+  if (/^https?:\/\//i.test(photo_url)) return photo_url
+  const base = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/$/, "")
+  const path = photo_url.startsWith("/") ? photo_url : `/${photo_url}`
+  return `${base}${path}`
+}
+
+
+useEffect(() => {
+  async function convertPhoto() {
+    if (!data || !data.photo_url) return
+    const url = certificatePhotoUrl(data.photo_url)
+    try {
+      const image = await imagetoDataURL(url)
+      setPhoto(image)
+    } catch (err) {
+      console.error(err)
+      setPhoto(url)
+    }
+  }
+  convertPhoto()
+}, [data])
   
 
   useEffect(() => {
@@ -81,24 +105,45 @@ useEffect(()=>{
   }
 
 
+  // async function downloadpdf() {
+  //   const imageData = await imagetoDataURL(
+  //     `${process.env.NEXT_PUBLIC_API_URL}${data.photo_url}`
+  //   )
+  //   if (!data || !certificateref.current) return
+  //   try {
+  //     const htmlpdf = (await import("html2pdf.js")).default
+  //     const element = certificateref.current
+      
+  //     await htmlpdf()
+  //       .set({
+  //         margin: 0,
+  //         filename: `${data.name}-certificate.pdf`,
+  //         image: { type: "jpeg", quality: 4 },
+  //         html2canvas: { scale: 1, useCORS: true },
+  //         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+  //       })
+  //       .from(element)
+  //       .save()
+  //   } catch (err) {
+  //     console.error(err)
+  //   }
+  // }
+
+
   async function downloadpdf() {
-    const imageData = await imagetoDataURL(
-      `${process.env.NEXT_PUBLIC_API_URL}${data.photo_url}`
-    )
     if (!data || !certificateref.current) return
     try {
-      const htmlpdf = (await import("html2pdf.js")).default
-      const element = certificateref.current
-      
-      await htmlpdf()
+      const html2pdf = (await import("html2pdf.js")).default
+      await html2pdf()
         .set({
           margin: 0,
           filename: `${data.name}-certificate.pdf`,
-          image: { type: "jpeg", quality: 4 },
-          html2canvas: { scale: 1, useCORS: true },
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, logging: false },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          pagebreak: { mode: ["avoid-all"] },
         })
-        .from(element)
+        .from(certificateref.current)
         .save()
     } catch (err) {
       console.error(err)
@@ -109,7 +154,7 @@ useEffect(()=>{
 
   return (
     <div className="flex flex-col gap-1 bg-white items-center  relative text-black p-10 min-w-screen overflow-hidden min-h-screen font-sans">
-            <button onClick={downloadpdf} className=" cursor-pointer absolute right-10 bg-red-500 text-yellow-400 border-2 border-yellow-500  p-2 rounded-lg font-bold ">Download pdf</button>
+            <button type="button" onClick={downloadpdf} className=" cursor-pointer absolute right-10 bg-red-500 text-yellow-400 border-2 border-yellow-500  p-2 rounded-lg font-bold ">Download pdf</button>
               
                {data && (
                     <div key={data.id} ref={certificateref}  className="relative flex flex-col items-center border-2 border-black rounded-lg w-[210mm] text-black h-[297mm] p-[3mm] gap-[3mm] bg-white box-border overflow-hidden">
@@ -183,13 +228,18 @@ useEffect(()=>{
                     <p className="text-[20px]">This is to Certify that</p>
                     <p className="text-[25px] font-bold " style={{color:"green"}}>{data.name}</p>
                     <div className="flex w-full  items-center justify-center gap-[4mm] ">
-                    {photo  && (
+                    {/* {photo  && (
   <img
     src={photo}
     crossOrigin="anonymous"
     className="w-[27mm] rounded-lg border-1 border-black rounded-2xl h-auto"
   />
-)}
+)} */}
+{(photo || certificatePhotoUrl(data.photo_url)) && (
+  <img
+    src={photo || certificatePhotoUrl(data.photo_url)}
+    crossOrigin="anonymous"
+    />)}
                         <div className="flex min-w-0 text-[13px] flex-col  gap-[1mm]">
                         <p className=":w-[50vw]">{data.gender==="female"?"D/O":"S/O"} <span className="font-bold">{data.parent}</span>  has been awarded with <span className="font-bold">{data.course_name}</span> course after
 completed the curriculum from our Institute 3DWEBSOFT FOUNDATION (IC :
