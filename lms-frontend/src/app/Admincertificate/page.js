@@ -64,6 +64,12 @@ export default function Attendance() {
 
     }
     
+    
+    function handleLogout() {
+      clearAuthSession()
+      router.replace("/Adminlogin")
+    }
+  
 
   
  
@@ -253,13 +259,13 @@ setPhotopreview(
 }} required/>
 {/* <button type="submit" className="border-1 border-white bg-blue-800 p-2 max-w-[200px] text-white font-bold rounded-lg">Submit</button> */}
 </div>
-                      <div className="flex items-center justify-center w-[70vw]">
+                      <div className="flex items-center justify-center overflow-auto w-[70vw]">
                       
                       </div>
                     </form>
                   </div>
                                     
-                                 <div className="grid  grid-cols-8 gap-40  w-full">
+                                 <div className="grid  grid-cols-8  w-full">
                                     <p className="font-bold ">S.No.</p>
                                     <p className="font-bold ">Name</p>
                                     <p className="font-bold ">Roll Number</p>
@@ -273,7 +279,7 @@ setPhotopreview(
                                     data.map(x=>(
                                       
                                      
-                                        <div key={x.id} className="grid   grid-cols-8  gap-40  w-full">
+                                        <div key={x.id} className="grid   grid-cols-8  w-full">
                                         
                                         <p className="">{x.id}</p>
                                         {x.id===ider?<input type="text" className="border-1 border-black p-1 rounded-lg w-[100px] text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:x.name}
