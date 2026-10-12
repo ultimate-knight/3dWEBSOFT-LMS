@@ -183,9 +183,9 @@ useEffect(()=>{
                     <p className="text-[20px]">This is to Certify that</p>
                     <p className="text-[25px] font-bold " style={{color:"green"}}>{data.name}</p>
                     <div className="flex w-full  items-center justify-center gap-[4mm] ">
-                    {(photo || certificatePhotoUrl(data.photo_url)) && (
+                    {photo  && (
   <img
-    src={photo || certificatePhotoUrl(data.photo_url)}
+    src={photo}
     crossOrigin="anonymous"
     className="w-[27mm] rounded-lg border-1 border-black rounded-2xl h-auto"
   />
