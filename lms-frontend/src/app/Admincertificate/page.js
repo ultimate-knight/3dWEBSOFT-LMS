@@ -265,7 +265,7 @@ setPhotopreview(
                     </form>
                   </div>
                                     
-                                 <div className="grid  grid-cols-8 gap-20  w-full">
+                                 <div className="grid  grid-cols-8 gap-20  w-[70vw]">
                                     <p className="font-bold ">S.No.</p>
                                     <p className="font-bold ">Name</p>
                                     <p className="font-bold ">Roll Number</p>
@@ -279,19 +279,19 @@ setPhotopreview(
                                     data.map(x=>(
                                       
                                      
-                                        <div key={x.id} className="grid   grid-cols-8 gap-20 justify-center  w-full">
+                                        <div key={x.id} className="grid   grid-cols-8 gap-20 justify-center  w-[70vw]">
                                         
-                                        <p className="w-full max-w-[50px]">{x.id}</p>
-                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg w-full max-w-[100px] text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[50xp]">{x.name}</p>}
-                                        <p className="w-full max-w-[50xp]">{x.roll_no}</p>
-                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg w-full max-w-[100px] text-black" value={x.course_name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,course_name:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[100px]">{x.course_name}</p>}
-                                        {x.id===ider?<input className="border-1 border-black p-1 rounded-lg break-words w-full max-w-[100px] text-black" value={x.exam_label} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,exam_label:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[200xp]">{x.exam_label}</p>}
+                                        <p className="w-full max-w-[10vw]">{x.id}</p>
+                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg w-full max-w-[10vw] text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[50xp]">{x.name}</p>}
+                                        <p className="w-full max-w-[10vw]">{x.roll_no}</p>
+                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg w-full max-w-[10vw] text-black" value={x.course_name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,course_name:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[100px]">{x.course_name}</p>}
+                                        {x.id===ider?<input className="border-1 border-black p-1 rounded-lg break-words w-full max-w-[10vw] text-black" value={x.exam_label} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,exam_label:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[200xp]">{x.exam_label}</p>}
                                         <Link href={`/Certificator/${x.id}`} className="text-center w-full max-w-[100px]  flex flex-col items-center justify-center text-white rounded-sm bg-blue-600  cursor-pointer p-1.5">
                                             <Download/>
                                         </Link>
-                                        <div className="flex gap-3">
-                                            <button onClick={()=>deleterg(x.id)} className="max-w-[100px] w-full cursor-pointer p-1 bg-red-600 rounded-lg text-white font-bold">Delete</button>
-                                            {x.id===ider?<button onClick={()=>Editer(x)} className="max-w-[500px] w-full h-auto p-2 bg-blue-600 rounded-lg text-white cursor-pointer font-bold">Update</button>:<button onClick={()=>setIder(x.id)} className="w-[500px] h-auto p-2 bg-blue-600 rounded-lg text-white cursor-pointer font-bold">Edit</button>}
+                                        <div className="flex gap-3 w-[800px]">
+                                            <button onClick={()=>deleterg(x.id)} className="w-full max-w-[100px] cursor-pointer p-1 text-center bg-red-600 rounded-lg text-white font-bold">Delete</button>
+                                            {x.id===ider?<button onClick={()=>Editer(x)} className=" w-full max-w-[100px]  p-2 bg-blue-600 rounded-lg text-white cursor-pointer font-bold">Update</button>:<button onClick={()=>setIder(x.id)} className="max-w-[500px] h-auto p-2 bg-blue-600 rounded-lg text-white cursor-pointer font-bold">Edit</button>}
                                         </div>
                                      </div>
 
