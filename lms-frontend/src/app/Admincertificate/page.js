@@ -259,7 +259,7 @@ setPhotopreview(
 }} required/>
 {/* <button type="submit" className="border-1 border-white bg-blue-800 p-2 max-w-[200px] text-white font-bold rounded-lg">Submit</button> */}
 </div>
-                      <div className="flex items-center justify-center overflow-auto w-[70vw]">
+                      <div className="flex items-center justify-center overflow-auto ">
                       
                       </div>
                     </form>
@@ -279,19 +279,19 @@ setPhotopreview(
                                     data.map(x=>(
                                       
                                      
-                                        <div key={x.id} className="grid   grid-cols-8  w-full">
+                                        <div key={x.id} className="grid   grid-cols-8 justify-center  w-full">
                                         
-                                        <p className="">{x.id}</p>
-                                        {x.id===ider?<input type="text" className="border-1 border-black p-1 rounded-lg w-[100px] text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:x.name}
-                                        <p className="">{x.roll_no}</p>
-                                        {x.id===ider?<input type="text" className="border-1 border-black p-1 rounded-lg w-[100px] text-black" value={x.course_name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,course_name:e.target.value}:row);setData(newdata)}}/>:<p className="">{x.course_name}</p>}
-                                        {x.id===ider?<input className="border-1 border-black p-1 rounded-lg w-[100px] text-black" value={x.exam_label} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,exam_label:e.target.value}:row);setData(newdata)}}/>:<p className="">{x.exam_label}</p>}
-                                        <Link href={`/Certificator/${x.id}`} className="text-center  flex flex-col items-center justify-center text-white rounded-sm bg-blue-600 w-[100px] cursor-pointer p-1.5">
+                                        <p className="w-full max-w-[50px]">{x.id}</p>
+                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg w-full max-w-[100px] text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[50xp]">{x.name}</p>}
+                                        <p className="w-full max-w-[50xp]">{x.roll_no}</p>
+                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg w-full max-w-[100px] text-black" value={x.course_name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,course_name:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[100px]">{x.course_name}</p>}
+                                        {x.id===ider?<input className="border-1 border-black p-1 rounded-lg break-words w-full max-w-[100px] text-black" value={x.exam_label} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,exam_label:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[200xp]">{x.exam_label}</p>}
+                                        <Link href={`/Certificator/${x.id}`} className="text-center w-full max-w-[100px]  flex flex-col items-center justify-center text-white rounded-sm bg-blue-600  cursor-pointer p-1.5">
                                             <Download/>
                                         </Link>
                                         <div className="flex gap-3">
-                                            <button onClick={()=>deleterg(x.id)} className="w-[100px cursor-pointer p-1 bg-red-600 rounded-lg text-white font-bold">Delete</button>
-                                            {x.id===ider?<button onClick={()=>Editer(x)} className="w-[500px] h-auto p-2 bg-blue-600 rounded-lg text-white cursor-pointer font-bold">Update</button>:<button onClick={()=>setIder(x.id)} className="w-[500px] h-auto p-2 bg-blue-600 rounded-lg text-white cursor-pointer font-bold">Edit</button>}
+                                            <button onClick={()=>deleterg(x.id)} className="max-w-[100px] w-full cursor-pointer p-1 bg-red-600 rounded-lg text-white font-bold">Delete</button>
+                                            {x.id===ider?<button onClick={()=>Editer(x)} className="max-w-[500px] w-full h-auto p-2 bg-blue-600 rounded-lg text-white cursor-pointer font-bold">Update</button>:<button onClick={()=>setIder(x.id)} className="w-[500px] h-auto p-2 bg-blue-600 rounded-lg text-white cursor-pointer font-bold">Edit</button>}
                                         </div>
                                      </div>
 
