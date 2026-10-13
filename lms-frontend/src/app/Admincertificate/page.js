@@ -265,7 +265,7 @@ setPhotopreview(
                     </form>
                   </div>
                                     
-                                 <div className="grid  grid-cols-8  w-full">
+                                 <div className="grid  grid-cols-8 gap-20  w-full">
                                     <p className="font-bold ">S.No.</p>
                                     <p className="font-bold ">Name</p>
                                     <p className="font-bold ">Roll Number</p>
@@ -279,7 +279,7 @@ setPhotopreview(
                                     data.map(x=>(
                                       
                                      
-                                        <div key={x.id} className="grid   grid-cols-8 justify-center  w-full">
+                                        <div key={x.id} className="grid   grid-cols-8 gap-20 justify-center  w-full">
                                         
                                         <p className="w-full max-w-[50px]">{x.id}</p>
                                         {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg w-full max-w-[100px] text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[50xp]">{x.name}</p>}
