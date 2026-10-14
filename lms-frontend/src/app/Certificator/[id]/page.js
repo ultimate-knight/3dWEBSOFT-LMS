@@ -138,10 +138,9 @@ useEffect(() => {
         .set({
           margin: 0,
           filename: `${data.name}-certificate.pdf`,
-          image: { type: "jpeg", quality: 0.98 },
+          image: { type: "jpeg", quality: 1 },
           html2canvas: { scale: 2, useCORS: true, logging: false },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-          pagebreak: { mode: ["avoid-all"] },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
         })
         .from(certificateref.current)
         .save()
@@ -157,7 +156,7 @@ useEffect(() => {
             <button type="button" onClick={downloadpdf} className=" cursor-pointer absolute right-10 bg-red-500 text-yellow-400 border-2 border-yellow-500  p-2 rounded-lg font-bold ">Download pdf</button>
               
                {data && (
-                    <div key={data.id} ref={certificateref}  className="relative flex flex-col items-center border-2 border-black rounded-lg w-[210mm] text-black h-[297mm] p-[3mm] gap-[3mm] bg-white box-border overflow-hidden">
+                    <div key={data.id} ref={certificateref}  className="relative flex flex-col items-center border-2 border-black rounded-lg w-[210mm] text-black h-[296.5mm] p-[3mm] gap-[3mm] bg-white box-border">
                         <div className="absolute inset-0 z-50 pointer-events-none z-0 pointer-events-none flex items-center   justify-center">
                 <img src="/computer12.jpeg" className="w-[700px] h-auto rounded-2xl opacity-10 "/>
                 </div>
@@ -190,39 +189,10 @@ useEffect(() => {
   <p className="relative z-10 font-bold">An ISO 9001:2015 Certified & Registered Under MCA,
   The Government of India</p>
 </div>
-                    <div className="w-fit  text-center text-[15px] flex items-center justify-center" style={{color:"yellow",backgroundColor:"blue",padding:"3mm",textAlign:"center",borderRadius:"20mm",fontWeight:"bold"}}>Head Office:- Plot No. 2-69/6 Near Gowtham Model School, Market Road, Narsingi Telangana - 500089 Head
+                    <div className="w-fit  text-center text-[15px] flex items-center justify-center" style={{color:"yellow",backgroundColor:"#4ABA80",padding:"3mm",textAlign:"center",borderRadius:"20mm",fontWeight:"bold"}}>Head Office:- Plot No. 2-69/6 Near Gowtham Model School, Market Road, Narsingi Telangana - 500089 Head
                     Office(Hyderabad)</div>
-                    {/* <p className=" w-fit max-w-full    text-[15px]   font-bold " style={{color:"yellow",backgroundColor:"green",padding:"3mm 6mm",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1.2,minHeight:"18mm",margin:0,textAlign:"center",boxSizing:"border-box",borderRadius:"20mm",fontWeight:"bold"}}>An ISO 9001:2015 Certified & Registered Under MCA, The Government of India</p> */}
-                    {/* <div
-  style={{
-    color: "yellow",
-    backgroundColor: "green",
-    borderRadius: "30px",
-
-    // Explicit alignment
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    textAlign: "center",
-    verticalAlign: "middle",
-    width:"90%",
-    fontSize:"15px",
-
-
-    // Stable dimensions and text rendering
-    minHeight: "14mm",
-    padding: "4px 16px",
-    lineHeight: "1.4",
-    boxSizing: "border-box",
-    margin: "0 auto"
-  }}
->
-  <p className="relative z-10 font-bold">An ISO 9001:2015 Certified & Registered Under MCA,
-  The Government of India</p>
-</div> */}
+                   
                     <div className="flex flex-col items-start  gap-3 font-bold text-[15px]"><p>CNI REG NO: U85499TS2026NPL220500</p><p>DARPAN ID: TS/2026/1176375</p><p>TP-ID:TP202187</p></div>
-                    {/* <p>Head Office:- Plot No. 2-69/6 Near Gowtham Model School, Market Road, Narsingi Telangana - 500089 Head
-                    Office(Hyderabad)</p> */}
                     <p className="font-extrabold text-[25px] " style={{color:"indigo"}}>Certificate</p>
                     <p className="text-[20px] font-bold">({data.course_name})</p>
                     <p className="text-[20px]">This is to Certify that</p>
@@ -275,13 +245,13 @@ our regular supervision.</p>
                         </div>
                     </div>
                     <div className="flex flex-col items-center w-full   gap-[1mm]">
-                        <p className="font-bold text-[20px] mt-[5mm]">Authority Sign :</p>
+                        <p className="font-bold text-[20px] ">Authority Sign :</p>
                         <div className="flex gap-[3mm] items-center -mt-[3mm] justify-center w-full">
-                            <img className="w-[20mm] " src="/santosh34.png"/>
-                            <img className="w-[20mm] " src="/Singature-Photoroom.png"/>
-                            <img className="w-[28mm] " src="/sealsign.png"/>
+                            <img className="w-[23mm] " src="/santosh34.png"/>
+                            <img className="w-[23mm] " src="/Singature-Photoroom.png"/>
+                            <img className="w-[23mm] " src="/sealsign.png"/>
                             
-                            <img className="w-[20mm] " src="/anuradha23.png"/>
+                            <img className="w-[22mm] " src="/anuradha23.png"/>
                             
                             
                         </div>
