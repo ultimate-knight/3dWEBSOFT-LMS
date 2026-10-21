@@ -27,16 +27,28 @@ import {
 
 
 export default function Attendance() {
+
   const fileInputRef=useRef(null)
   const [data,setData]=useState([])
   const [ider,setIder]=useState(null)
-  const [deleter,setDeleter]=useState("")
    {/* name,gender,parent,issue_date,joining_date,leaving_date,grade,exam_label,course_name */}
   const [attend,setAttend]=useState([])
   const [photopreview,setPhotopreview]=useState("")
   const [loading,setLoading]=useState(false)
   const [formdata,setFormdata]=useState({name:"",gender:"",parent:"",issue_date:"",joining_date:"",leaving_date:"",grade:"",exam_label:"",course_name:"",photo:null})
   const [editform,seteditForm]=useState({name:"",gender:"",parent:"",issue_date:"",joining_date:"",leaving_date:"",grade:"",exam_label:"",course_name:"",photo:null})
+
+
+  //pagination
+  const [currentpage,setCurrentpage]=useState(1)
+  const itemsperpage=5
+
+  const totalpages=Math.ceil(data.length/itemsperpage)
+
+  const startIndex=(currentpage-1)*itemsperpage
+
+
+  const dataslice=data.slice(startIndex,startIndex+itemsperpage);
 
 
   function handleLogout() {
@@ -264,22 +276,22 @@ setPhotopreview(
                       </div>
                     </form>
                   </div>
-                                    <div className="overflow-x-auto flex flex-col justify-between gap-y-7">
-                                 <div className="grid  grid-cols-[70px_180px_150px_150px_120px_140px_220px] gap-4">
-                                    <p className="font-bold ">S.No.</p>
-                                    <p className="font-bold ">Name</p>
-                                    <p className="font-bold ">Roll Number</p>
-                                    <p className="font-bold ">Course</p>
-                                    <p className="font-bold ">Exam</p>
-                                    <p className="font-bold ">Certificate</p>
-                                    <p className="font-bold ">Actions</p>
+                                    <div className="overflow-x-auto flex flex-col border-1 border-black  text-white bg-green-900 w-[90vw]  justify-between gap-y-7">
+                                 <div className="grid  grid-cols-[70px_180px_150px_150px_120px_140px_220px] text-white p-2  bg-black min-w-screen   gap-4">
+                                    <p className="font-extrabold ">S.No.</p>
+                                    <p className="font-extrabold ">Name</p>
+                                    <p className="font-extrabold">Roll Number</p>
+                                    <p className="font-extrabold">Course</p>
+                                    <p className="font-extrabold">Exam</p>
+                                    <p className="font-extrabold">Certificate</p>
+                                    <p className="font-extrabold">Actions</p>
                                  </div>
                                  {
 
-                                    data.map(x=>(
+                                    dataslice.map(x=>(
                                       
                                      
-                                        <div key={x.id} className="grid   grid-cols-[70px_180px_150px_150px_120px_140px_220px] gap-4  ">
+                                        <div key={x.id} className="grid p-2 bg-green-600 min-w-screen font-medium flex flex-col items-center  grid-cols-[70px_180px_150px_150px_120px_140px_220px] gap-4  ">
                                         
                                         <p className="w-full max-w-[10vw]">{x.id}</p>
                                         {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="break-all">{x.name}</p>}
@@ -298,6 +310,29 @@ setPhotopreview(
                                     ))
                                 
 }
+
+</div>
+
+<div className="flex gap-3 items-center justify-center">
+  <button disabled={currentpage===1} onClick={()=>setCurrentpage(prev=>Math.max(prev-1,1))} className="text-gray-500 border-1 border-black p-2 font-bold cursor-pointer hover:bg-blue-500 hover:text-white rounded-lg">previous</button>
+  {/* {
+  Array.from({length:totalpages},(_,i)=>i+1).map((page)=>(
+    <div className="flex gap-2" key={page} >
+        <button className={`${currentpage===page?"bg-blue-600 px-5 py-2 rounded-lg text-white":"hover:bg-gray-400 px-5 py-2 border-1 border-black rounded-lg text-black"}`} onClick={()=>setCurrenpage(page)}>{page}</button>
+    </div>
+  )
+  )
+} */}
+
+{
+  Array.from({length:totalpages},(_,i)=>i+1).map((page)=>(
+    <div key={page}>
+      <button className={`${currentpage===page?"bg-blue-700 px-4 py-2 text-white rounded-lg":"border-1 border-black rounded-lg px-4 py-2 hover:bg-gray-400"}`} onClick={()=>setCurrentpage(page)}>{page}</button>
+    </div>
+  ))
+}
+<button disabled={currentpage===totalpages} onClick={()=>setCurrentpage(prev=>Math.min(prev+1,totalpages))} className="text-gray-500 border-1 border-black p-2 font-bold cursor-pointer hover:bg-blue-500 hover:text-white rounded-lg">next</button>
+
 </div>
 
 

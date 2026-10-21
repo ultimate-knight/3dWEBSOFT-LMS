@@ -88,11 +88,11 @@ export default function AdminSidebar() {
                                
                         </div>
                           <div className="flex flex-col justify-start w-full gap-5">
-                                <p className="text-gray-500 uppercase">Account</p>
+                                {/* <p className="text-gray-500 uppercase">Account</p>
                                 <Link onClick={()=>setClicker("Aicenter")} href="/Profile" className={`text-lg hover:bg-blue-500 rounded-2xl flex gap-5 p-2 ${clicker==="Aicenter"?"bg-blue-500  w-full  rounded-2xl":""}`}>
                                 <Brain size={25}/>
                                 <p>My Profile</p>
-                                </Link>
+                                </Link> */}
                                 <iframe
   src="https://www.youtube.com/embed/Gp7R-8zHE_A"
   title="YouTube video"
