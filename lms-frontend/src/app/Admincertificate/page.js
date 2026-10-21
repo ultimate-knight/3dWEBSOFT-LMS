@@ -264,8 +264,8 @@ setPhotopreview(
                       </div>
                     </form>
                   </div>
-                                    
-                                 <div className="grid  grid-cols-8 gap-20  w-[70vw]">
+                                    <div className="overflow-x-auto flex flex-col justify-between gap-y-7">
+                                 <div className="grid  grid-cols-7 gap-4">
                                     <p className="font-bold ">S.No.</p>
                                     <p className="font-bold ">Name</p>
                                     <p className="font-bold ">Roll Number</p>
@@ -279,14 +279,14 @@ setPhotopreview(
                                     data.map(x=>(
                                       
                                      
-                                        <div key={x.id} className="grid   grid-cols-8 gap-20 justify-center  w-[70vw]">
+                                        <div key={x.id} className="grid   grid-cols-7  gap-4  ">
                                         
                                         <p className="w-full max-w-[10vw]">{x.id}</p>
-                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg w-full max-w-[10vw] text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[50xp]">{x.name}</p>}
-                                        <p className="w-full max-w-[10vw]">{x.roll_no}</p>
-                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg w-full max-w-[10vw] text-black" value={x.course_name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,course_name:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[100px]">{x.course_name}</p>}
-                                        {x.id===ider?<input className="border-1 border-black p-1 rounded-lg break-words w-full max-w-[10vw] text-black" value={x.exam_label} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,exam_label:e.target.value}:row);setData(newdata)}}/>:<p className="w-full max-w-[200xp]">{x.exam_label}</p>}
-                                        <Link href={`/Certificator/${x.id}`} className="text-center w-full max-w-[100px]  flex flex-col items-center justify-center text-white rounded-sm bg-blue-600  cursor-pointer p-1.5">
+                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="">{x.name}</p>}
+                                        <p className="">{x.roll_no}</p>
+                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.course_name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,course_name:e.target.value}:row);setData(newdata)}}/>:<p className="">{x.course_name}</p>}
+                                        {x.id===ider?<input className="border-1 border-black p-1 rounded-lg break-words  text-black" value={x.exam_label} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,exam_label:e.target.value}:row);setData(newdata)}}/>:<p className="">{x.exam_label}</p>}
+                                        <Link href={`/Certificator/${x.id}`} className="text-center   flex flex-col items-center justify-center text-white rounded-sm bg-blue-600  cursor-pointer p-1.5">
                                             <Download/>
                                         </Link>
                                         <div className="flex gap-3 w-[800px]">
@@ -298,6 +298,7 @@ setPhotopreview(
                                     ))
                                 
 }
+</div>
 
 
                         </div>

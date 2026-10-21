@@ -26,8 +26,8 @@ export default function AdminSidebar() {
 
 
     useEffect(()=>{
-        if(pathname==="/Dashboard"){
-            setClicker("dashboard")
+        if(pathname==="/Admin"){
+            setClicker("Admin")
         }else if(pathname==="/Courses"){
           setClicker("Students")
         }else if(pathname==="/Attendance"){
@@ -44,8 +44,8 @@ export default function AdminSidebar() {
            setClicker("Analytics")
         }else if(pathname==="/Profile"){
            setClicker("Aicenter")
-        }else if(pathname==="/Admin"){
-           setClicker("Admin")
+        }else if(pathname==="/Admincertificate"){
+           setClicker("Admincertificate")
         }
     },[])
 
@@ -57,7 +57,7 @@ export default function AdminSidebar() {
                         </div>
                         <div className="flex flex-col justify-start w-full gap-5">
                                 <p className="text-gray-500 uppercase">Main</p>
-                                <Link   href="/Admin" className={`text-lg flex hover:bg-blue-500 rounded-2xl gap-5 p-2 ${clicker==="dashboard"?"bg-blue-500  w-full  rounded-2xl":""}`}>
+                                <Link   href="/Admin" className={`text-lg flex hover:bg-blue-500 rounded-2xl gap-5 p-2 ${clicker==="Admin"?"bg-blue-500  w-full  rounded-2xl":""}`}>
                                 <LayoutDashboard size={25}/>
                                 <p>Dashboard</p>
                                 </Link>
@@ -80,7 +80,7 @@ export default function AdminSidebar() {
                         </div>
                           <div className="flex flex-col justify-start w-full gap-5">
                                 <p className="text-gray-500 uppercase">Certificate section</p>
-                                <Link onClick={()=>setClicker("Exams")} href="/Admincertificate" className={`text-lg flex hover:bg-blue-500 rounded-2xl gap-5 p-2 ${clicker==="Exams"?"bg-blue-500  w-full  rounded-2xl":""}`}>
+                                <Link onClick={()=>setClicker("Exams")} href="/Admincertificate" className={`text-lg flex hover:bg-blue-500 rounded-2xl gap-5 p-2 ${clicker==="Admincertificate"?"bg-blue-500  w-full  rounded-2xl":""}`}>
                                 <ClipboardList size={25}/>
                                 <p>Add Certificate</p>
                                 </Link>
@@ -93,6 +93,12 @@ export default function AdminSidebar() {
                                 <Brain size={25}/>
                                 <p>My Profile</p>
                                 </Link>
+                                <iframe
+  src="https://www.youtube.com/embed/Gp7R-8zHE_A"
+  title="YouTube video"
+  className="w-full aspect-video rounded-lg"
+  allowFullScreen
+/>
                                 {/* <Link onClick={()=>setClicker("Admin")} href="/Admin" className={`text-lg hover:bg-blue-500 rounded-2xl flex gap-5 p-2 ${clicker==="Admin"?"bg-blue-500  w-full  rounded-2xl":""}`}>
                                 <Target size={25}/>
                                 <p>Admin</p>
