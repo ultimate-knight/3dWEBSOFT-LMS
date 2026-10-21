@@ -265,7 +265,7 @@ setPhotopreview(
                     </form>
                   </div>
                                     <div className="overflow-x-auto flex flex-col justify-between gap-y-7">
-                                 <div className="grid  grid-cols-7 gap-4">
+                                 <div className="grid  grid-cols-[70px_180px_150px_150px_120px_140px_220px] gap-4">
                                     <p className="font-bold ">S.No.</p>
                                     <p className="font-bold ">Name</p>
                                     <p className="font-bold ">Roll Number</p>
@@ -279,13 +279,13 @@ setPhotopreview(
                                     data.map(x=>(
                                       
                                      
-                                        <div key={x.id} className="grid   grid-cols-7  gap-4  ">
+                                        <div key={x.id} className="grid   grid-cols-[70px_180px_150px_150px_120px_140px_220px] gap-4  ">
                                         
                                         <p className="w-full max-w-[10vw]">{x.id}</p>
-                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="">{x.name}</p>}
-                                        <p className="">{x.roll_no}</p>
-                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.course_name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,course_name:e.target.value}:row);setData(newdata)}}/>:<p className="">{x.course_name}</p>}
-                                        {x.id===ider?<input className="border-1 border-black p-1 rounded-lg break-words  text-black" value={x.exam_label} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,exam_label:e.target.value}:row);setData(newdata)}}/>:<p className="">{x.exam_label}</p>}
+                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="break-all">{x.name}</p>}
+                                        <p className="break-words">{x.roll_no}</p>
+                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.course_name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,course_name:e.target.value}:row);setData(newdata)}}/>:<p className="break-words line-clamp-3">{x.course_name}</p>}
+                                        {x.id===ider?<input className="border-1 border-black p-1 rounded-lg break-words  text-black" value={x.exam_label} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,exam_label:e.target.value}:row);setData(newdata)}}/>:<p className="break-words">{x.exam_label}</p>}
                                         <Link href={`/Certificator/${x.id}`} className="text-center   flex flex-col items-center justify-center text-white rounded-sm bg-blue-600  cursor-pointer p-1.5">
                                             <Download/>
                                         </Link>
