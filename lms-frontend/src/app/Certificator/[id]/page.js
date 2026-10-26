@@ -130,24 +130,88 @@ useEffect(() => {
   // }
 
 
+  // async function downloadpdf() {
+  //   if (!data || !certificateref.current) return
+  //   try {
+  //     const html2pdf = (await import("html2pdf.js")).default
+  //     await html2pdf()
+  //       .set({
+  //         margin: 0,
+  //         filename: `${data.name}-certificate.pdf`,
+  //         image: { type: "jpeg", quality: 1 },
+  //         html2canvas: { scale: 2, useCORS: true, logging: false },
+  //         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+  //       })
+  //       .from(certificateref.current)
+  //       .save()
+  //   } catch (err) {
+  //     console.error(err)
+  //   }
+  // }
+
+
+
   async function downloadpdf() {
-    if (!data || !certificateref.current) return
+    if (!data || !certificateref.current) return;
+  
     try {
-      const html2pdf = (await import("html2pdf.js")).default
-      await html2pdf()
-        .set({
-          margin: 0,
-          filename: `${data.name}-certificate.pdf`,
-          image: { type: "jpeg", quality: 1 },
-          html2canvas: { scale: 2, useCORS: true, logging: false },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-        })
-        .from(certificateref.current)
-        .save()
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas-pro"),
+        import("jspdf"),
+      ]);
+  
+      const element = certificateref.current;
+  
+      // Convert the certificate HTML into a canvas image
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+      });
+  
+      const imageData = canvas.toDataURL("image/jpeg", 1);
+  
+      // Create an A3 portrait PDF
+      const pdf = new jsPDF({
+        unit: "mm",
+        format: "a3",
+        orientation: "portrait",
+      });
+  
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+  
+      // Preserve the certificate's aspect ratio
+      const ratio = Math.min(
+        pageWidth / canvas.width,
+        pageHeight / canvas.height
+      );
+  
+      const imageWidth = canvas.width * ratio;
+      const imageHeight = canvas.height * ratio;
+  
+      // Center the certificate on the PDF page
+      const x = (pageWidth - imageWidth) / 2;
+      const y = (pageHeight - imageHeight) / 2;
+  
+      pdf.addImage(
+        imageData,
+        "JPEG",
+        x,
+        y,
+        imageWidth,
+        imageHeight
+      );
+  
+      // Download the PDF
+      pdf.save(`${data.name}-certificate.pdf`);
+  
     } catch (err) {
-      console.error(err)
+      console.error("PDF generation failed:", err);
     }
   }
+
   
 
 
@@ -157,6 +221,7 @@ useEffect(() => {
               
                {data && (
                     <div key={data.id} ref={certificateref}  className="relative flex flex-col items-center border-2 border-black rounded-lg w-[210mm] text-black h-[296.5mm] p-[3mm] gap-[3mm] bg-white box-border">
+                      <div className="w-0 h-0 border-l-[160px] border-l-transparent border-r-[160px] absolute -left-[27.5mm]  -top-[6.5mm] border-r-transparent border-b-[160px] border-blue-900 rounded-b-[200px] rotate-[-45deg]"></div>
                         <div className="absolute inset-0 z-50 pointer-events-none z-0 pointer-events-none flex items-center   justify-center">
                 <img src="/computer12.jpeg" className="w-[700px] h-auto rounded-2xl opacity-10 "/>
                 </div>
@@ -186,10 +251,10 @@ useEffect(() => {
     margin: "0 auto"
   }}
 >
-  <p className="relative z-10 font-bold">An ISO 9001:2015 Certified & Registered Under MCA,
+  <p className="relative flex flex-col items-center justify-center z-10 font-bold" >An ISO 9001:2015 Certified & Registered Under MCA,
   The Government of India</p>
 </div>
-                    <div className="w-fit  text-center text-[15px] flex items-center justify-center" style={{color:"yellow",backgroundColor:"#4ABA80",padding:"3mm",textAlign:"center",borderRadius:"20mm",fontWeight:"bold"}}>Head Office:- Plot No. 2-69/6 Near Gowtham Model School, Market Road, Narsingi Telangana - 500089 Head
+                    <div className="w-fit  text-center text-[15px] flex items-center justify-center" style={{color:"yellow",backgroundColor:"#4ABA80",textAlign:"center",padding:"3mm",borderRadius:"20mm",fontWeight:"bold"}}>Head Office:- Plot No. 2-69/6 Near Gowtham Model School, Market Road, Narsingi Telangana - 500089 Head
                     Office(Hyderabad)</div>
                    
                     <div className="flex flex-col items-start  gap-3 font-bold text-[15px]"><p>CNI REG NO: U85499TS2026NPL220500</p><p>DARPAN ID: TS/2026/1176375</p><p>TP-ID:TP202187</p></div>
@@ -211,7 +276,7 @@ useEffect(() => {
     className="w-[27mm] rounded-lg border-1 border-black rounded-2xl h-auto"
     crossOrigin="anonymous"
     />)}
-                        <div className="flex min-w-0 text-[13px] flex-col  gap-[1mm]">
+                        <div className="flex min-w-0 text-[13px] flex-col  gap-[2mm]">
                         <p className=":w-[50vw]">{data.gender==="female"?"D/O":"S/O"} <span className="font-bold">{data.parent}</span>  has been awarded with <span className="font-bold">{data.course_name}</span> course after
 completed the curriculum from our Institute 3DWEBSOFT FOUNDATION (IC :
 <span className="font-bold">IID26036205</span>) During <span className="font-bold">{data.joining_date.slice(0,10)}</span> To <span className="font-bold">{data.leaving_date.slice(0,10)}</span> with grade <span className="font-bold">{data.grade}</span> and were given under
@@ -245,6 +310,7 @@ our regular supervision.</p>
                         </div>
                     </div>
                     <div className="flex flex-col items-center w-full   gap-[1mm]">
+                    <div className="w-0 h-0 border-l-[160px] border-l-transparent border-r-[160px] absolute -right-[28mm]  -bottom-[6mm] border-r-transparent border-b-[160px] border-blue-900 rounded-b-[200px] rotate-[135deg]"></div>
                         <p className="font-bold text-[20px] ">Authority Sign :</p>
                         <div className="flex gap-[3mm] items-center -mt-[3mm] justify-center w-full">
                             <img className="w-[23mm] " src="/santosh34.png"/>

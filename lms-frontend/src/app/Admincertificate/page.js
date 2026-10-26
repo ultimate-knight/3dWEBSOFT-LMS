@@ -5,6 +5,7 @@ import AdminSidebar from "@/Components/AdminSidebar";
 import api from "@/lib/page";
 import Overheadbar from "@/Components/Overheadbar";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 
 import student from "@/data/mock-certificate.json"
@@ -28,6 +29,8 @@ import {
 
 export default function Attendance() {
 
+  const router=useRouter();
+
   const fileInputRef=useRef(null)
   const [data,setData]=useState([])
   const [ider,setIder]=useState(null)
@@ -35,13 +38,13 @@ export default function Attendance() {
   const [attend,setAttend]=useState([])
   const [photopreview,setPhotopreview]=useState("")
   const [loading,setLoading]=useState(false)
-  const [formdata,setFormdata]=useState({name:"",gender:"",parent:"",issue_date:"",joining_date:"",leaving_date:"",grade:"",exam_label:"",course_name:"",photo:null})
-  const [editform,seteditForm]=useState({name:"",gender:"",parent:"",issue_date:"",joining_date:"",leaving_date:"",grade:"",exam_label:"",course_name:"",photo:null})
+  const [formdata,setFormdata]=useState({name:"",gender:"",parent:"",issue_date:"",joining_date:"",leaving_date:"",grade:"",exam_label:"",course_name:"",photo:null,mother:"",DOB:"",subjects:[{subject_name:"",pratical_marks:"",theory_marks:""}]})
 
 
   //pagination
   const [currentpage,setCurrentpage]=useState(1)
   const itemsperpage=5
+
 
   const totalpages=Math.ceil(data.length/itemsperpage)
 
@@ -78,7 +81,6 @@ export default function Attendance() {
     
     
     function handleLogout() {
-      clearAuthSession()
       router.replace("/Adminlogin")
     }
   
@@ -118,6 +120,9 @@ export default function Attendance() {
         joining_date:cander.joining_date,
         leaving_date:cander.leaving_date,
         grade:cander.grade,
+        mother:cander.mother,
+        DOB:cander.DOB,
+        subjects:cander.subjects,
         exam_label:cander.exam_label,
         photo:cander.photo
     })
@@ -146,6 +151,9 @@ export default function Attendance() {
       data.append("grade",formdata.grade);
       data.append("exam_label",formdata.exam_label);
       data.append("course_name",formdata.course_name);
+      data.append("mother",formdata.mother);
+      data.append("DOB",formdata.DOB);
+      data.append("subjects",JSON.stringify(formdata.subjects));
       data.append("photo",formdata.photo);
 
 
@@ -167,7 +175,7 @@ console.log("FORMDATA:", [...data.entries()])
           fileInputRef.current.value = '';
         }
         setLoading(false)
-        setFormdata({name:"",gender:"",parent:"",issue_date:"",joining_date:"",leaving_date:"",grade:"",exam_label:"",course_name:"",photo:null})
+        setFormdata({name:"",gender:"",parent:"",issue_date:"",joining_date:"",leaving_date:"",grade:"",exam_label:"",course_name:"",photo:null,mother:"",DOB:"",subjects: [{ subject_name: "", theory_marks: "", pratical_marks: "" }]})
         setPhotopreview("")
       },3000)
      
@@ -175,6 +183,20 @@ console.log("FORMDATA:", [...data.entries()])
     }
     
     
+  }
+
+  function addsubject(){
+    setFormdata({
+      ...formdata,
+      subjects:[
+        ...formdata.subjects,
+        {
+          subject_name:"",
+          theory_marks:"",
+          practical_marks:""
+        }
+      ]
+    })
   }
 
   {/* name,gender,parent,issue_date,joining_date,leaving_date,grade,exam_label,course_name */}
@@ -188,7 +210,7 @@ console.log("FORMDATA:", [...data.entries()])
                 <button
           type="button"
           onClick={handleLogout}
-          className="p-2 w-full max-w-[100px] bg-blue-500 text-center rounded-xl font-bold text-white"
+          className="px-3 py-3 cursor-pointer w-full max-w-[100px] bg-blue-500 text-center rounded-xl font-bold text-white"
         >
           Logout
         </button>
@@ -223,12 +245,20 @@ console.log("FORMDATA:", [...data.entries()])
                       </select>
                       </div>
                       <div className="flex flex-col gap-2">
-                      <label>Parent</label>
-                      <input value={formdata.parent} onChange={(e)=>setFormdata({...formdata,parent:e.target.value})} className="border-1 border-black p-1 rounded-lg" placeholder="parent" required/>
+                      <label>Father name</label>
+                      <input value={formdata.parent} onChange={(e)=>setFormdata({...formdata,parent:e.target.value})} className="border-1 border-black p-1 rounded-lg" placeholder="Father name" required/>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                      <label>Mother name</label>
+                      <input value={formdata.mother} onChange={(e)=>setFormdata({...formdata,mother:e.target.value})} className="border-1 border-black p-1 rounded-lg" placeholder="mother name" required/>
                       </div>
                       <div className="flex flex-col gap-2">
                       <label>Issue_date</label>
                       <input value={formdata.issue_date} onChange={(e)=>setFormdata({...formdata,issue_date:e.target.value})} className="border-1 border-black p-1 rounded-lg" type="date" required/>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                      <label>Date of Birth</label>
+                      <input value={formdata.DOB} onChange={(e)=>setFormdata({...formdata,DOB:e.target.value})} className="border-1 border-black p-1 rounded-lg" type="date" required/>
                       </div>
                       <div className="flex flex-col gap-2">
                       <label>Joining_date</label>
@@ -243,18 +273,38 @@ console.log("FORMDATA:", [...data.entries()])
                       <input value={formdata.grade} onChange={(e)=>setFormdata({...formdata,grade:e.target.value})} className="border-1 w-full border-black p-1 rounded-lg" type="text" placeholder="Grade" required/>
                       </div>
                       <div className="flex flex-col items-start justify-start gap-2">
-                      <label>Course_name</label>
+                      <label>Role</label>
                       <input value={formdata.course_name} onChange={(e)=>setFormdata({...formdata,course_name:e.target.value})} className="border-1 w-full border-black p-1 rounded-lg" type="text" placeholder="course name" required/>
                       </div>
+                      
                       <div className="flex flex-col items-start justify-start gap-3">
                       <label>Exam</label>
                       <input value={formdata.exam_label} onChange={(e)=>setFormdata({...formdata,exam_label:e.target.value})} className="border-1 w-full border-black p-1 rounded-lg" type="text" placeholder="exam" required/>
+                      <div  className={`flex flex-col gap-6 w-full ${formdata.photo?"mt-40":""}`}>
+                      {
+                        formdata.subjects.map((x,index)=>(
+                          
+                            <div key={index} className="flex flex-col gap-5 border-1 border-black rounded-2xl p-4 w-[203%] rounded-lg">
+                                <p className="font-bold">Subject:{index+1}</p>
+                                <div className="flex flex-col gap-2">
+                                  <input type="text" value={x.subject_name} onChange={(e)=>{const updatedsubjects=[...formdata.subjects];updatedsubjects[index].subject_name=e.target.value;setFormdata({...formdata,subjects:updatedsubjects})}} className="border-1 w-full border-black p-2 text-black rounded-lg" placeholder="write subject name"/>
+                                  <div className="flex flex-col gap-2 w-full">
+                                  <input type="text" value={x.pratical_marks} onChange={(e)=>{const updatedsubjects=[...formdata.subjects];updatedsubjects[index].pratical_marks=e.target.value;setFormdata({...formdata,subjects:updatedsubjects})}} className="border-1 w-full border-black p-2 text-black rounded-lg" placeholder="write practical marks"/>
+                                  <input type="text" value={x.theory_marks} onChange={(e)=>{const updatedsubjects=[...formdata.subjects];updatedsubjects[index].theory_marks=e.target.value;setFormdata({...formdata,subjects:updatedsubjects})}} className="border-1 border-black w-full p-2 text-black rounded-lg" placeholder="write theory marks"/>
+                                  </div>
+                                </div>
+                            </div>
+                            
+                        ))
+                      }
+                      </div>
+                      <button type="button" onClick={addsubject} className="border-1 border-black p-2 rounded-lg text-white bg-green-600 cursor-pointer hover:bg-green-300 font-bold">Add Subject</button>
                       <button type="submit" className="border-1 border-white bg-blue-800 p-2 max-w-[200px] text-white font-bold rounded-lg">Submit</button>
                       </div>
                       
                       <div className="flex flex-col gap-3">
                       <label>Choose photo</label>
-                      {photopreview && <img src={photopreview} alt="no photo provided" className="h-32 w-32 rounded-lg"/>}
+                      {photopreview &&  <img src={photopreview} alt="no photo provided" className="h-32 w-32 rounded-lg"/>}
                       <input ref={fileInputRef} className="border-1 w-full border-black p-1 rounded-lg"  type="file" accept="image/*" onChange={(e) => {
 
 const file = e.target.files[0]
@@ -276,13 +326,14 @@ setPhotopreview(
                       </div>
                     </form>
                   </div>
-                                    <div className="overflow-x-auto flex flex-col border-1 border-black  text-white bg-green-900 w-[90vw]  justify-between gap-y-7">
-                                 <div className="grid  grid-cols-[70px_180px_150px_150px_120px_140px_220px] text-white p-2  bg-black min-w-screen   gap-4">
+                                    <div className="overflow-x-auto flex flex-col border-1 border-black  text-white bg-green-900 pb-6 w-[90vw]  justify-between gap-y-7">
+                                 <div className="grid  grid-cols-[70px_180px_150px_150px_120px_170px_140px_220px] text-white p-2  bg-black min-w-screen   gap-4">
                                     <p className="font-extrabold ">S.No.</p>
                                     <p className="font-extrabold ">Name</p>
                                     <p className="font-extrabold">Roll Number</p>
                                     <p className="font-extrabold">Course</p>
                                     <p className="font-extrabold">Exam</p>
+                                    <p className="font-extrabold">Marksheet</p>
                                     <p className="font-extrabold">Certificate</p>
                                     <p className="font-extrabold">Actions</p>
                                  </div>
@@ -291,13 +342,16 @@ setPhotopreview(
                                     dataslice.map(x=>(
                                       
                                      
-                                        <div key={x.id} className="grid p-2 bg-green-600 min-w-screen font-medium flex flex-col items-center  grid-cols-[70px_180px_150px_150px_120px_140px_220px] gap-4  ">
+                                        <div key={x.id} className="grid p-2 bg-green-600 min-w-screen font-medium flex flex-col items-center  grid-cols-[70px_180px_150px_150px_120px_140px_140px_220px] gap-4  ">
                                         
                                         <p className="w-full max-w-[10vw]">{x.id}</p>
                                         {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="break-all">{x.name}</p>}
                                         <p className="break-words">{x.roll_no}</p>
                                         {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.course_name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,course_name:e.target.value}:row);setData(newdata)}}/>:<p className="break-words line-clamp-3">{x.course_name}</p>}
                                         {x.id===ider?<input className="border-1 border-black p-1 rounded-lg break-words  text-black" value={x.exam_label} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,exam_label:e.target.value}:row);setData(newdata)}}/>:<p className="break-words">{x.exam_label}</p>}
+                                        <Link href={`/Marksheet/${x.id}`} className="text-center   flex flex-col items-center justify-center text-white rounded-sm bg-blue-600  cursor-pointer p-1.5">
+                                            <Download/>
+                                        </Link>
                                         <Link href={`/Certificator/${x.id}`} className="text-center   flex flex-col items-center justify-center text-white rounded-sm bg-blue-600  cursor-pointer p-1.5">
                                             <Download/>
                                         </Link>
