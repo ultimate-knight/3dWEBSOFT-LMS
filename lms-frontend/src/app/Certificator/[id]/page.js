@@ -276,7 +276,7 @@ useEffect(() => {
     className="w-[27mm] rounded-lg border-1 border-black rounded-2xl h-auto"
     crossOrigin="anonymous"
     />)}
-                        <div className="flex min-w-0 text-[13px] flex-col  gap-[2mm]">
+                        <div className="flex min-w-0 text-[13px] flex-col  gap-[1.5mm]">
                         <p className=":w-[50vw]">{data.gender==="female"?"D/O":"S/O"} <span className="font-bold">{data.parent}</span>  has been awarded with <span className="font-bold">{data.course_name}</span> course after
 completed the curriculum from our Institute 3DWEBSOFT FOUNDATION (IC :
 <span className="font-bold">IID26036205</span>) During <span className="font-bold">{data.joining_date.slice(0,10)}</span> To <span className="font-bold">{data.leaving_date.slice(0,10)}</span> with grade <span className="font-bold">{data.grade}</span> and were given under

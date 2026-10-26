@@ -281,10 +281,10 @@ useEffect(() => {
                     <div className="flex flex-col">
                     <div className="flex ">
                                 <p className="border-1 flex flex-col items-center justify-center border-black w-[240px] p-2 font-bold text-center h-auto  bg-gray-400">SUBJECT-NAME</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto font-bold  bg-gray-400">THEORY</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto font-bold  bg-gray-400">PRACTICAL</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto font-bold  bg-gray-400">OBTAINED</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto font-bold  bg-gray-400">TOTAL</p>
+                                <p className="border-1 flex flex-col items-center justify-center border-black w-[120px] text-center h-auto font-bold  bg-gray-400">THEORY</p>
+                                <p className="border-1 flex flex-col items-center justify-center border-black w-[120px] text-center h-auto font-bold  bg-gray-400">PRACTICAL</p>
+                                <p className="border-1 flex flex-col items-center justify-center border-black w-[120px] text-center h-auto font-bold  bg-gray-400">OBTAINED</p>
+                                <p className="border-1 flex flex-col items-center justify-center border-black w-[120px] text-center h-auto font-bold  bg-gray-400">TOTAL</p>
                             </div>
                 
 {
@@ -295,19 +295,19 @@ subjects.map((x, index) => (
         {x.subject_name}
       </p>
 
-      <p className="border-1 flex items-center justify-center border-black w-[100px] text-center">
+      <p className="border-1 flex items-center justify-center border-black w-[120px] text-center">
         {x.theory_marks}
       </p>
 
-      <p className="border-1 flex items-center justify-center border-black w-[100px] text-center">
+      <p className="border-1 flex items-center justify-center border-black w-[120px] text-center">
         {x.pratical_marks}
       </p>
 
-      <p className="border-1 flex items-center justify-center border-black w-[100px] text-center">
+      <p className="border-1 flex items-center justify-center border-black w-[120px] text-center">
         {Number(x?.theory_marks || 0) + Number(x?.pratical_marks || 0)}
       </p>
 
-      <p className="border-1 flex items-center justify-center border-black w-[100px] text-center">
+      <p className="border-1 flex items-center justify-center border-black w-[120px] text-center">
         {40}
       </p>
     </div>
@@ -315,10 +315,10 @@ subjects.map((x, index) => (
 ))}
 <div className="flex ">
                                 <p className="border-1 flex flex-col items-center justify-center border-black w-[240px] p-2 text-center h-auto  0">TOTAL</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{subjects.reduce((x,y)=>Number(x)+Number(y.theory_marks),0)}</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{subjects.reduce((x,y)=>Number(x)+Number(y.pratical_marks),0)}</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{n1+n2}</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{40*n}</p>
+                                <p className="border-1 flex flex-col items-center justify-center border-black w-[120px] text-center h-auto ">{subjects.reduce((x,y)=>Number(x)+Number(y.theory_marks),0)}</p>
+                                <p className="border-1 flex flex-col items-center justify-center border-black w-[120px] text-center h-auto ">{subjects.reduce((x,y)=>Number(x)+Number(y.pratical_marks),0)}</p>
+                                <p className="border-1 flex flex-col items-center justify-center border-black w-[120px] text-center h-auto ">{n1+n2}</p>
+                                <p className="border-1 flex flex-col items-center justify-center border-black w-[120px] text-center h-auto ">{40*n}</p>
                             </div>
                     </div>
                     </div>
