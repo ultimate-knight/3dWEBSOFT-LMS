@@ -216,7 +216,7 @@ useEffect(() => {
 
 
   return (
-    <div className="flex flex-col gap-1 bg-white items-center  relative text-black p-10 min-w-screen overflow-hidden min-h-screen font-sans">
+    <div className="flex flex-col gap-1 bg-white items-center  relative text-black p-15 min-w-screen overflow-hidden min-h-screen font-sans">
             <button type="button" onClick={downloadpdf} className=" cursor-pointer absolute right-10 bg-red-500 text-yellow-400 border-2 border-yellow-500  p-2 rounded-lg font-bold ">Download pdf</button>
               
                {data && (
@@ -272,7 +272,7 @@ useEffect(() => {
 {(photo || certificatePhotoUrl(data.photo_url)) && (
   <img
     src={photo || certificatePhotoUrl(data.photo_url)}
-    className="w-[32mm] rounded-lg border-1 border-black object-cover rounded-2xl h-auto"
+    className="w-[35mm] rounded-lg border-1 border-black object-cover rounded-2xl h-[38mm]"
     crossOrigin="anonymous"
     />)}
                         <div className="flex min-w-0 text-[13px] flex-col  gap-[1.5mm]">
