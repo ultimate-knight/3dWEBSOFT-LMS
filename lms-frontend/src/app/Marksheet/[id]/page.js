@@ -59,8 +59,18 @@ function certificatePhotoUrl(photo_url) {
   return `${base}${path}`
 }
 
-let n=data?.subjects.length
+const subjects = Array.isArray(data?.subjects) ? data.subjects : [];
 
+const n = subjects.length;
+const n1 = subjects.reduce(
+  (total, subject) => total + Number(subject.theory_marks || 0),
+  0
+);
+const n2 = subjects.reduce(
+  (total, subject) => total + Number(subject.pratical_marks || 0),
+  0
+);
+const n3 = n1 + n2;
 
 useEffect(() => {
   async function convertPhoto() {
@@ -96,10 +106,7 @@ useEffect(() => {
 
   const certificateref=useRef(null)
 
-  const n1=data?.subjects.reduce((x,y)=>Number(x)+Number(y.theory_marks),0)
-  const n2=data?.subjects.reduce((x,y)=>Number(x)+Number(y.pratical_marks),0)
-
-  const n3=n1+n2
+  
 
 
 
@@ -315,7 +322,7 @@ useEffect(() => {
                   
 } */}
 {
-data?.subjects.map((x, index) => (
+subjects.map((x, index) => (
   <div key={index} className="w-full rounded-2xl">
     <div className="flex">
       <p className="border-1 flex items-center justify-center border-black w-[240px] p-2 text-center">
