@@ -254,8 +254,7 @@ useEffect(() => {
   <p className="relative flex flex-col items-center justify-center z-10 font-bold" >An ISO 9001:2015 Certified & Registered Under MCA,
   The Government of India</p>
 </div>
-                    <div className="w-fit  text-center text-[15px] flex items-center justify-center" style={{color:"yellow",backgroundColor:"#4ABA80",textAlign:"center",padding:"3mm",borderRadius:"20mm",fontWeight:"bold"}}>Head Office:- Plot No. 2-69/6 Near Gowtham Model School, Market Road, Narsingi Telangana - 500089 Head
-                    Office(Hyderabad)</div>
+                    <div className="w-fit  text-center text-[15px] flex items-center justify-center" style={{color:"yellow",backgroundColor:"#4ABA80",textAlign:"center",padding:"3mm",borderRadius:"20mm",fontWeight:"bold"}}>Head Office:- Plot No. 2-69/6 Near Gowtham Model School, Market Road, Narsingi Telangana - 500089.</div>
                    
                     <div className="flex flex-col items-start  gap-3 font-bold text-[15px]"><p>CNI REG NO: U85499TS2026NPL220500</p><p>DARPAN ID: TS/2026/1176375</p><p>TP-ID:TP202187</p></div>
                     <p className="font-extrabold text-[25px] " style={{color:"indigo"}}>Certificate</p>
