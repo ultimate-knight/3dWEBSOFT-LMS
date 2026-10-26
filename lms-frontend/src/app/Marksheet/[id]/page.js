@@ -32,24 +32,6 @@ console.log("Is array:", Array.isArray(data?.subjects));
     getdatabyid(id);
   }
 },[id])
-// const subjects =
-//   typeof data?.subjects === "string"
-//     ? JSON.parse(data.subjects)
-//     : data?.subjects;
-
-// useEffect(()=>{
-//   async function convertPhoto(){
-//     if(!data || !data.photo_url) return;
-
-    
-//     const image=await imagetoDataURL(`${process.env.NEXT_PUBLIC_API_URL}${data.photo_url}`)
-
-//     setPhoto(image)
-//   }
-
-//   convertPhoto()
-  
-// },[data])
 
 function certificatePhotoUrl(photo_url) {
   if (!photo_url) return ""
@@ -304,23 +286,7 @@ useEffect(() => {
                                 <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto font-bold  bg-gray-400">OBTAINED</p>
                                 <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto font-bold  bg-gray-400">TOTAL</p>
                             </div>
-                    {/* {
-                        (Array.isArray(data?.subjects) ? data.subjects : []).map((x,index)=>(
-                            <div key={index} className="w-full  rounded-2xl">
-                           
-                            <div className="flex ">
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[240px] p-2 font-lightbold text-center h-auto  ">{x.subject_name}</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{x.theory_marks}</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{x.pratical_marks}</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{Number(x?.theory_marks+x?.pratical_marks)}</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">40</p>
-                            </div>
-                           
-                </div>
-
-                        ))
-                  
-} */}
+                
 {
 subjects.map((x, index) => (
   <div key={index} className="w-full rounded-2xl">
@@ -349,8 +315,8 @@ subjects.map((x, index) => (
 ))}
 <div className="flex ">
                                 <p className="border-1 flex flex-col items-center justify-center border-black w-[240px] p-2 text-center h-auto  0">TOTAL</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{data?.subjects.reduce((x,y)=>Number(x)+Number(y.theory_marks),0)}</p>
-                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{data?.subjects.reduce((x,y)=>Number(x)+Number(y.pratical_marks),0)}</p>
+                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{subjects.reduce((x,y)=>Number(x)+Number(y.theory_marks),0)}</p>
+                                <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{subjects.reduce((x,y)=>Number(x)+Number(y.pratical_marks),0)}</p>
                                 <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{n1+n2}</p>
                                 <p className="border-1 flex flex-col items-center justify-center border-black w-[100px] text-center h-auto ">{40*n}</p>
                             </div>

@@ -1214,32 +1214,96 @@ function randomfunc(prefix){
     return prefix+randomer
 }
 
-app.post("/certificate/",upload.single("photo"),(req,res)=>{
-    const {name,gender,parent,issue_date,joining_date,leaving_date,grade,exam_label,course_name}=req.body;
-    const enrollment_id=randomfunc("EID")
-    const roll_no=randomfunc("RN")
-    const certificate_no=randomfunc("CN")
-    const photo_url=req.file?`/uploads/${req.file.filename}`:null
+// app.post("/certificate/",upload.single("photo"),(req,res)=>{
+//     const {name,gender,parent,issue_date,joining_date,leaving_date,grade,exam_label,course_name,mother,DOB,subjects}=req.body;
+//     const enrollment_id=randomfunc("EID")
+//     const roll_no=randomfunc("RN")
+//     const Marksheet_no=randomfunc("MN")
+//     const certificate_no=randomfunc("CN")
+//     const photo_url=req.file?`/uploads/${req.file.filename}`:null
 
-    const sql=`insert into certificate18(enrollment_id,roll_no,certificate_no,name,gender,parent,issue_date,joining_date,leaving_date,grade,photo_url,exam_label,course_name) values(?,?,?,?,?,?,?,?,?,?,?,?,?)`
+//     const sql=`insert into certificate18(enrollment_id,roll_no,certificate_no,Marksheet_no,name,gender,parent,issue_date,joining_date,leaving_date,grade,photo_url,exam_label,course_name,mother,DOB,subjects) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
-    dbConnect.query(sql,[enrollment_id,roll_no,certificate_no,name,gender,parent,issue_date,joining_date,leaving_date,grade,photo_url,exam_label,course_name],(error,result)=>{
-        if(error){
-            console.log("error occured",error.message)
-            return res.status(500).json({message:`error occured ${error.message}`})
-        }
+//     dbConnect.query(sql,[enrollment_id,roll_no,certificate_no,Marksheet_no,name,gender,parent,issue_date,joining_date,leaving_date,grade,photo_url,exam_label,course_name,mother,DOB,JSON.stringify(subjects)],(error,result)=>{
+//         if(error){
+//             console.log("error occured",error.message)
+//             return res.status(500).json({message:`error occured ${error.message}`})
+//         }
 
-        if(!result){
-            console.log("error occured",error.message)
-            return res.status(405).json({message:"missing fields"})
+//         if(!result){
+//             console.log("error occured",error.message)
+//             return res.status(405).json({message:"missing fields"})
             
+//         }
+
+//         return res.json({message:"All data is created in certificate",data:result})
+
+//     })
+
+// })
+
+
+
+app.post("/certificate/", upload.single("photo"), (req, res) => {
+    const {
+        name, gender, parent, issue_date, joining_date,
+        leaving_date, grade, exam_label, course_name,
+        mother, DOB
+    } = req.body;
+
+    let subjects;
+
+    try {
+        subjects = typeof req.body.subjects === "string"
+            ? JSON.parse(req.body.subjects)
+            : req.body.subjects;
+
+        if (!Array.isArray(subjects)) {
+            return res.status(400).json({
+                message: "subjects must be an array"
+            });
+        }
+    } catch (error) {
+        console.error("Invalid subjects received:", req.body.subjects);
+        return res.status(400).json({
+            message: "Invalid subjects JSON"
+        });
+    }
+
+    console.log("Parsed subjects:", subjects);
+
+    const enrollment_id = randomfunc("EID");
+    const roll_no = randomfunc("RN");
+    const Marksheet_no = randomfunc("MN");
+    const certificate_no = randomfunc("CN");
+    const photo_url = req.file
+        ? `/uploads/${req.file.filename}`
+        : null;
+
+    const sql = `INSERT INTO certificate18
+    (enrollment_id, roll_no, certificate_no, Marksheet_no,
+     name, gender, parent, issue_date, joining_date, leaving_date,
+     grade, photo_url, exam_label, course_name, mother, DOB, subjects)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    dbConnect.query(sql, [
+        enrollment_id, roll_no, certificate_no, Marksheet_no,
+        name, gender, parent, issue_date, joining_date, leaving_date,
+        grade, photo_url, exam_label, course_name, mother, DOB,
+        JSON.stringify(subjects)
+    ], (error, result) => {
+        if (error) {
+            console.error("Certificate insert error:", error.message);
+            return res.status(500).json({ message: error.message });
         }
 
-        return res.json({message:"All data is created in certificate",data:result})
+        return res.json({
+            message: "Certificate created successfully",
+            data: result
+        });
+    });
+});
 
-    })
-
-})
 
 
 
@@ -1296,7 +1360,8 @@ app.put("/certificate/:id",(req,res)=>{
     
    const {id}=req.params;
 
-   const affectedcolumns=["name","gender","parent","issue_date","joining_date","leaving_date","grade","photo_url","exam_label","course_name"]
+
+   const affectedcolumns=["name","gender","parent","issue_date","joining_date","leaving_date","grade","photo_url","exam_label","course_name","mother","DOB","subjects"]
 
    const updates=[]
    const values=[]
@@ -1304,7 +1369,11 @@ app.put("/certificate/:id",(req,res)=>{
    for(const columns of affectedcolumns){
     if(req.body[columns]!==undefined){
         updates.push(`${columns}=?`)
+        if(columns==="subjects"){
+            values.push(JSON.stringify(req.body[columns]))
+        }else{
         values.push(req.body[columns])
+        }
     }
    }
 
@@ -1395,3 +1464,10 @@ server.on("error", (err) => {
     console.error(err)
     process.exit(1)
 })
+
+
+
+
+
+
+
