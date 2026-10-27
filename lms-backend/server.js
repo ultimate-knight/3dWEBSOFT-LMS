@@ -19,15 +19,17 @@ if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true })
 }
 
-const storage=multer.diskStorage({
-    destination:(req,file,cb)=>{
-        cb(null, uploadsDir)
-    },
+// const storage=multer.diskStorage({
+//     destination:(req,file,cb)=>{
+//         cb(null, uploadsDir)
+//     },
 
-    filename:(req,file,cb)=>{
-        cb(null,Date.now()+"-"+file.originalname)
-    }
-})
+//     filename:(req,file,cb)=>{
+//         cb(null,Date.now()+"-"+file.originalname)
+//     }
+// })
+
+const storage=multer.memoryStorage()
 
 const upload=multer({
     storage:storage
@@ -1277,7 +1279,7 @@ app.post("/certificate/", upload.single("photo"), (req, res) => {
     const Marksheet_no = randomfunc("MN");
     const certificate_no = randomfunc("CN");
     const photo_url = req.file
-        ? `/uploads/${req.file.filename}`
+        ? `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`
         : null;
 
     const sql = `INSERT INTO certificate18
