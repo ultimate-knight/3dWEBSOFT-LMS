@@ -323,7 +323,7 @@ subjects.map((x, index) => (
                     </div>
                     <div className="flex gap-5 items-center  justify-center w-full font-bold">
                         <p>Total Obtained Marks : {n1+n2}</p>
-                        <p>Total Percent : {(n1+n2).toFixed(2)*100/(40*n)}%</p>
+                        <p>Total Percent : {((n1+n2)*100/(40*n)).toFixed(2)}%</p>
                         <p>Grade : {(n3*100).toFixed(2)/(40*n)>=90?"A+":((n1+n2)*100/(40*n))>=80?"B+":((n1+n2)*100/(40*n))>=70?"C+":((n1+n2)*100/(40*n))>=60?"D+":((n1+n2)*100/(40*n))>=50?"E+":"F"}</p>
                         <p>Result : Pass</p>
                     </div>
