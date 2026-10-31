@@ -34,6 +34,7 @@ export default function Attendance() {
   const fileInputRef=useRef(null)
   const [data,setData]=useState([])
   const [ider,setIder]=useState(null)
+  const [loadrer,setLoader]=useState(false)
    {/* name,gender,parent,issue_date,joining_date,leaving_date,grade,exam_label,course_name */}
   const [attend,setAttend]=useState([])
   const [photopreview,setPhotopreview]=useState("")
@@ -136,9 +137,14 @@ export default function Attendance() {
   async function handleSubmit(e){
     e.preventDefault()
     console.log("API URL:", process.env.NEXT_PUBLIC_API_URL)
+
+    console.log("1. About to send request");
+
+console.log("API base URL:", api.defaults.baseURL);
     
     try {
       setLoading(true)
+      setLoader(true)
       const data=new FormData()
       
 
@@ -158,19 +164,39 @@ export default function Attendance() {
 
 
       console.log("URL:", `${process.env.NEXT_PUBLIC_API_URL}/certificate/`)
-console.log("PHOTO:", formdata.photo)
-console.log("FORMDATA:", [...data.entries()])
   
   
       const response=await api.post("/certificate/",data)
       console.log("response",response.data)
+
+
+ console.log("2. SERVER RESPONSE:", response.status);
+    console.log("3. RESPONSE DATA:", response.data);
+
+    console.log("PHOTO:", formdata.photo)
+console.log("FORMDATA:", [...data.entries()])
+
+
    
       
     } catch (error) {
+       console.error("REQUEST FAILED:", error);
+
+    console.error("Error message:", error.message);
+    console.error("Status:", error.response?.status);
+    console.error("Server response:", error.response?.data);
+
+    alert(
+        error.response?.data?.message ||
+        error.message ||
+        "Request failed"
+    );
       console.log("error",error.message)
       
     }finally{
+      console.log("4. Request finished");
       setTimeout(()=>{
+        setLoader(false)
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -299,7 +325,7 @@ console.log("FORMDATA:", [...data.entries()])
                       }
                       </div>
                       <button type="button" onClick={addsubject} className="border-1 border-black p-2 rounded-lg text-white bg-green-600 cursor-pointer hover:bg-green-300 font-bold">Add Subject</button>
-                      <button type="submit" className="border-1 border-white bg-blue-800 p-2 max-w-[200px] text-white font-bold rounded-lg">Submit</button>
+                      <button type="submit" className="border-1 border-white bg-blue-800 p-2 w-full max-w-[120px] text-white font-bold rounded-lg cursor-pointer hover:bg-blue-400">{loadrer===true?"Submitting...":"Submit"}</button>
                       </div>
                       
                       <div className="flex flex-col gap-3">
@@ -345,7 +371,7 @@ setPhotopreview(
                                         <div key={x.id} className="grid p-2 bg-green-600 min-w-screen font-medium flex flex-col items-center  grid-cols-[70px_180px_150px_150px_120px_140px_140px_220px] gap-4  ">
                                         
                                         <p className="w-full max-w-[10vw]">{x.id}</p>
-                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="break-all">{x.name}</p>}
+                                        {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,name:e.target.value}:row);setData(newdata)}}/>:<p className="block truncate">{x.name}</p>}
                                         <p className="break-words">{x.roll_no}</p>
                                         {x.id===ider?<input type="text" className="border-1 border-black break-words p-1 rounded-lg  text-black" value={x.course_name} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,course_name:e.target.value}:row);setData(newdata)}}/>:<p className="break-words line-clamp-3">{x.course_name}</p>}
                                         {x.id===ider?<input className="border-1 border-black p-1 rounded-lg break-words  text-black" value={x.exam_label} onChange={(e)=>{const newdata=data.map(row=>row.id===x.id?{...row,exam_label:e.target.value}:row);setData(newdata)}}/>:<p className="break-words">{x.exam_label}</p>}

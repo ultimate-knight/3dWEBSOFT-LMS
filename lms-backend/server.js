@@ -6,6 +6,7 @@ require("dotenv").config()
 const bcrypt=require("bcryptjs")
 const jwt=require("jsonwebtoken")
 const multer=require("multer")
+const uploadStream=require("./utilities/Cloudinary-setup/page")
 const {dbConnect}=require("./db/index.js")
 
 
@@ -19,18 +20,18 @@ if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true })
 }
 
-const storage=multer.diskStorage({
-    destination:(req,file,cb)=>{
-        cb(null, uploadsDir)
-    },
+// const storage=multer.diskStorage({
+//     destination:(req,file,cb)=>{
+//         cb(null, uploadsDir)
+//     },
 
-    filename:(req,file,cb)=>{
-        cb(null,Date.now()+"-"+file.originalname)
-    }
-})
+//     filename:(req,file,cb)=>{
+//         cb(null,Date.now()+"-"+file.originalname)
+//     }
+// })
 
 const upload=multer({
-    storage:storage
+    storage:multer.memoryStorage()
 })
 
 
@@ -1244,7 +1245,7 @@ function randomfunc(prefix){
 
 
 
-app.post("/certificate/", upload.single("photo"), (req, res) => {
+app.post("/certificate/", upload.single("photo"), async (req, res) => {
     const {
         name, gender, parent, issue_date, joining_date,
         leaving_date, grade, exam_label, course_name,
@@ -1264,21 +1265,31 @@ app.post("/certificate/", upload.single("photo"), (req, res) => {
             });
         }
     } catch (error) {
-        console.error("Invalid subjects received:", req.body.subjects);
-        return res.status(400).json({
-            message: "Invalid subjects JSON"
-        });
+        console.error("FULL ERROR:");
+    console.dir(error, { depth: null });
+
+    console.error("ERROR MESSAGE:", error?.message);
+    console.error("ERROR STACK:", error?.stack);
+
+    return res.status(500).json({
+        success: false,
+        message: error?.message || "Internal server error"
+    });
     }
 
     console.log("Parsed subjects:", subjects);
+
+    const resulter=await uploadStream(req.file.buffer)
+
+    
 
     const enrollment_id = randomfunc("EID");
     const roll_no = randomfunc("RN");
     const Marksheet_no = randomfunc("MN");
     const certificate_no = randomfunc("CN");
-    const photo_url = req.file
-        ? `/uploads/${req.file.filename}`
-        : null;
+    const photo_url = resulter.secure_url
+
+    console.log("photo_url",photo_url)
 
     const sql = `INSERT INTO certificate18
     (enrollment_id, roll_no, certificate_no, Marksheet_no,
@@ -1292,6 +1303,7 @@ app.post("/certificate/", upload.single("photo"), (req, res) => {
         grade, photo_url, exam_label, course_name, mother, DOB,
         JSON.stringify(subjects)
     ], (error, result) => {
+
         if (error) {
             console.error("Certificate insert error:", error.message);
             return res.status(500).json({ message: error.message });
