@@ -1253,8 +1253,12 @@ app.post("/certificate/", upload.single("photo"), async (req, res) => {
     } = req.body;
 
     let subjects;
+    let projects;
 
     try {
+        projects = typeof req.body.project === "string"
+            ? JSON.parse(req.body.project)
+            : req.body.project;
         subjects = typeof req.body.subjects === "string"
             ? JSON.parse(req.body.subjects)
             : req.body.subjects;
@@ -1262,6 +1266,11 @@ app.post("/certificate/", upload.single("photo"), async (req, res) => {
         if (!Array.isArray(subjects)) {
             return res.status(400).json({
                 message: "subjects must be an array"
+            });
+        }
+         if (!Array.isArray(projects)) {
+            return res.status(400).json({
+                message: "projects must be an array"
             });
         }
     } catch (error) {
@@ -1294,14 +1303,14 @@ app.post("/certificate/", upload.single("photo"), async (req, res) => {
     const sql = `INSERT INTO certificate18
     (enrollment_id, roll_no, certificate_no, Marksheet_no,
      name, gender, parent, issue_date, joining_date, leaving_date,
-     grade, photo_url, exam_label, course_name, mother, DOB, subjects)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+     grade, photo_url, exam_label, course_name, mother, DOB, subjects,project)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
 
     dbConnect.query(sql, [
         enrollment_id, roll_no, certificate_no, Marksheet_no,
         name, gender, parent, issue_date, joining_date, leaving_date,
         grade, photo_url, exam_label, course_name, mother, DOB,
-        JSON.stringify(subjects)
+        JSON.stringify(subjects),JSON.stringify(projects)
     ], (error, result) => {
 
         if (error) {
@@ -1373,7 +1382,7 @@ app.put("/certificate/:id",(req,res)=>{
    const {id}=req.params;
 
 
-   const affectedcolumns=["name","gender","parent","issue_date","joining_date","leaving_date","grade","photo_url","exam_label","course_name","mother","DOB","subjects"]
+   const affectedcolumns=["name","gender","parent","issue_date","joining_date","leaving_date","grade","photo_url","exam_label","course_name","mother","DOB","subjects","project"]
 
    const updates=[]
    const values=[]
@@ -1381,7 +1390,7 @@ app.put("/certificate/:id",(req,res)=>{
    for(const columns of affectedcolumns){
     if(req.body[columns]!==undefined){
         updates.push(`${columns}=?`)
-        if(columns==="subjects"){
+        if(columns==="subjects" || "project"){
             values.push(JSON.stringify(req.body[columns]))
         }else{
         values.push(req.body[columns])

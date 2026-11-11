@@ -39,7 +39,7 @@ export default function Attendance() {
   const [attend,setAttend]=useState([])
   const [photopreview,setPhotopreview]=useState("")
   const [loading,setLoading]=useState(false)
-  const [formdata,setFormdata]=useState({name:"",gender:"",parent:"",issue_date:"",joining_date:"",leaving_date:"",grade:"",exam_label:"",course_name:"",photo:null,mother:"",DOB:"",subjects:[{subject_name:"",pratical_marks:"",theory_marks:""}]})
+  const [formdata,setFormdata]=useState({name:"",gender:"",parent:"",issue_date:"",joining_date:"",leaving_date:"",grade:"",exam_label:"",course_name:"",photo:null,mother:"",DOB:"",subjects:[{subject_name:"",pratical_marks:"",theory_marks:""}],project:[{project_name:""}]})
 
 
   //pagination
@@ -124,6 +124,7 @@ export default function Attendance() {
         mother:cander.mother,
         DOB:cander.DOB,
         subjects:cander.subjects,
+        subjects:cander.project,
         exam_label:cander.exam_label,
         photo:cander.photo
     })
@@ -160,6 +161,7 @@ console.log("API base URL:", api.defaults.baseURL);
       data.append("mother",formdata.mother);
       data.append("DOB",formdata.DOB);
       data.append("subjects",JSON.stringify(formdata.subjects));
+      data.append("project",JSON.stringify(formdata.project));
       data.append("photo",formdata.photo);
 
 
@@ -201,7 +203,7 @@ console.log("FORMDATA:", [...data.entries()])
           fileInputRef.current.value = '';
         }
         setLoading(false)
-        setFormdata({name:"",gender:"",parent:"",issue_date:"",joining_date:"",leaving_date:"",grade:"",exam_label:"",course_name:"",photo:null,mother:"",DOB:"",subjects: [{ subject_name: "", theory_marks: "", pratical_marks: "" }]})
+        setFormdata({name:"",gender:"",parent:"",issue_date:"",joining_date:"",leaving_date:"",grade:"",exam_label:"",course_name:"",photo:null,mother:"",DOB:"",subjects: [{ subject_name: "", theory_marks: "", pratical_marks: "" }],project:[{project_name:""}]})
         setPhotopreview("")
       },3000)
      
@@ -220,6 +222,18 @@ console.log("FORMDATA:", [...data.entries()])
           subject_name:"",
           theory_marks:"",
           practical_marks:""
+        }
+      ]
+    })
+  }
+
+  function addproject(){
+    setFormdata({
+      ...formdata,
+      project:[
+        ...formdata.project,
+        {
+          project_name:""
         }
       ]
     })
@@ -323,8 +337,22 @@ console.log("FORMDATA:", [...data.entries()])
                             
                         ))
                       }
+                      {
+                        formdata.project.map((x,index)=>(
+                          
+                            <div key={index} className="flex flex-col gap-5 border-1 border-black rounded-2xl p-4 w-[203%] rounded-lg">
+                                <p className="font-bold">project:{index+1}</p>
+                                <div className="flex flex-col gap-2">
+                                  <input type="text" value={x.project_name} onChange={(e)=>{const updatedprojects=formdata.project.map((x,i)=>i===index?{...x,project_name:e.target.value}:x);setFormdata({...formdata,project:updatedprojects})}} className="border-1 w-full border-black p-2 text-black rounded-lg" placeholder="write project name"/>
+                                
+                                </div>
+                            </div>
+                            
+                        ))
+                      }
                       </div>
                       <button type="button" onClick={addsubject} className="border-1 border-black p-2 rounded-lg text-white bg-green-600 cursor-pointer hover:bg-green-300 font-bold">Add Subject</button>
+                      <button type="button" onClick={addproject} className="border-1 border-black p-2 rounded-lg text-white bg-green-600 cursor-pointer hover:bg-green-300 font-bold">Add project</button>
                       <button type="submit" className="border-1 border-white bg-blue-800 p-2 w-full max-w-[120px] text-white font-bold rounded-lg cursor-pointer hover:bg-blue-400">{loadrer===true?"Submitting...":"Submit"}</button>
                       </div>
                       

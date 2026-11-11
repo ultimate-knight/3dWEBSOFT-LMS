@@ -149,6 +149,7 @@ useEffect(() => {
   //   }
   // }
 
+  const project = Array.isArray(data?.project) ? data.project : [];
 
 
   async function downloadpdf() {
@@ -220,7 +221,7 @@ useEffect(() => {
             <button type="button" onClick={downloadpdf} className=" cursor-pointer absolute right-10 bg-red-500 text-yellow-400 border-2 border-yellow-500  p-2 rounded-lg font-bold ">Download pdf</button>
               
                {data && (
-                    <div key={data.id} ref={certificateref}  className="relative flex flex-col items-center border-2 border-black rounded-lg w-[210mm] text-black h-[296.5mm] p-[3mm] gap-[3mm] bg-white box-border">
+                    <div key={data.id} ref={certificateref}  className="relative flex flex-col items-center border-2 border-black rounded-lg w-[210mm] text-black min-h-[296.5mm] p-[5mm] gap-[3mm] bg-white box-border">
                       <div className="w-0 h-0 border-l-[160px] border-l-transparent border-r-[160px] absolute -left-[27.5mm]  -top-[6.5mm] border-r-transparent border-b-[160px] border-blue-900 rounded-b-[200px] rotate-[-45deg]"></div>
                         <div className="absolute inset-0 z-50 pointer-events-none z-0 pointer-events-none flex items-center   justify-center">
                 <img src="/computer12.jpeg" className="w-[700px] h-auto rounded-2xl opacity-10 "/>
@@ -258,10 +259,10 @@ useEffect(() => {
                    
                     <div className="flex flex-col items-start  gap-3 font-bold text-[15px]"><p>CNI REG NO: U85499TS2026NPL220500</p><p>DARPAN ID: TS/2026/1176375</p><p>TP-ID:TP202187</p></div>
                     <p className="font-extrabold text-[25px] " style={{color:"indigo"}}>Certificate</p>
-                    <p className="text-[20px] font-bold">({data.course_name})</p>
+                    <p className="text-[20px] font-bold uppercase">({data.course_name})</p>
                     <p className="text-[20px]">This is to Certify that</p>
-                    <p className="text-[25px] font-bold " style={{color:"green"}}>{data.name}</p>
-                    <div className="flex w-full  items-center justify-center gap-[4mm] ">
+                    <p className="text-[25px] font-bold uppercase" style={{color:"green"}}>{data.name}</p>
+                    <div className="flex flex-col  w-full  items-center justify-center gap-[7mm] ">
                     {/* {photo  && (
   <img
     src={photo}
@@ -275,16 +276,24 @@ useEffect(() => {
     className="w-[35mm] rounded-lg border-1 border-black object-cover rounded-2xl h-[38mm]"
     crossOrigin="anonymous"
     />)}
-                        <div className="flex min-w-0 text-[13px] flex-col  gap-[1.5mm]">
-                        <p className=":w-[50vw]">{data.gender==="female"?"D/O":"S/O"} <span className="font-bold">{data.parent}</span>  has been awarded with <span className="font-bold">{data.course_name}</span> course after
-completed the curriculum from our Institute 3DWEBSOFT FOUNDATION (IC :
-<span className="font-bold">IID26036205</span>) During <span className="font-bold">{data.joining_date.slice(0,10)}</span> To <span className="font-bold">{data.leaving_date.slice(0,10)}</span> with grade <span className="font-bold">{data.grade}</span> and were given under
+                        <div className="flex min-w-0 text-[13px] flex-col text-left  gap-[1.5mm]">
+                        <p className=":w-[50vw]">{data.gender==="female"?"D/O":"S/O"} <span className="font-bold">{data.parent}</span>  has been awarded with <span className="font-bold uppercase">{data.course_name}  {data.course_name==="Tailoring" || data.course_name==="Beautician"?"( course )":"( 1 month On Job Training Program )"}</span> certificate after
+completing the curriculum from our company at <span className="font-bold">3DWEBSOFT FOUNDATION (IC :
+IID26036205</span>) during <span className="font-bold">{data.joining_date.slice(0,10)}</span> To <span className="font-bold">{data.leaving_date.slice(0,10)}</span> with grade <span className="font-bold">{data.grade}</span> and were given under
 our regular supervision.</p>
 <p className=":w-[50vw]">{data.gender==="female"?"She":"He"} has successfully completed the prescribed curriculum under the regular supervision and guidance of the institute and has demonstrated satisfactory performance throughout the course.</p>
 <p className=":w-[50vw]">In recognition of {data.gender==="female"?"her":"his"} successful completion and performance, {data.gender==="female"?"She":"He"} has been awarded with grade <span className="font-bold">{data.grade}.</span></p>
+<p>{data.gender==="female"?"She":"He"} has completed the following project successfully during his tenure in  our <span className="font-bold">On Job Training Program</span>.</p>
+{
+  project.map((x,index)=>(
+    <ul key={index} className="text-center flex flex-col items-start justify-center font-bold">
+  <li className="list-disc  uppercase font-bold">{x.project_name}</li>
+</ul>
+
+  ))}
 </div>
                     </div>
-                    <div className="flex w-full items-center   gap-[2mm]">
+                    <div className="flex w-full items-center   gap-[2mm] mt-[4mm]">
                         <img src="/qrcode23.png" className="w-[30mm] h-auto"/>
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-col text-[13px] gap-[0.5mm] font-bold">
@@ -292,7 +301,7 @@ our regular supervision.</p>
                                 <p>Roll Number : {data.roll_no}</p>
                                 <p>Certificate Number : {data.certificate_no}</p>
                                 <p>Issue Date : {data.issue_date.slice(0,10)}</p>
-                                <p>Course Name : {data.course_name}</p>                          
+                                <p>Course Name : <span className="uppercase">{data.course_name}</span></p>                          
                             </div>
                         </div>
                     </div>
